@@ -42,6 +42,7 @@ export default function AdminDashboard() {
   const [categoryFilter, setCategoryFilter] = useState('All Categories')
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Mock data for applications
   const applications: Application[] = [
@@ -143,27 +144,37 @@ export default function AdminDashboard() {
         {/* Header */}
         <header className="relative z-10 bg-white/10 backdrop-blur-md border-b border-white/20">
           <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-xs sm:text-sm p-[3mm] sm:p-[5mm]">महाराष्ट्र</span>
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <div className="w-5 h-5 flex flex-col justify-center space-y-1">
+                  <div className={`w-full h-0.5 bg-white transition-transform ${isMobileMenuOpen ? 'rotate-45 translate-y-1' : ''}`}></div>
+                  <div className={`w-full h-0.5 bg-white transition-opacity ${isMobileMenuOpen ? 'opacity-0' : ''}`}></div>
+                  <div className={`w-full h-0.5 bg-white transition-transform ${isMobileMenuOpen ? '-rotate-45 -translate-y-1' : ''}`}></div>
+                </div>
+              </button>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+                <span className="text-white font-bold text-xs sm:text-sm">MH</span>
               </div>
-              <div className="text-white">
-                <h1 className="text-sm sm:text-lg font-semibold">Maharashtra Water Resources Department</h1>
-                <p className="text-white/80 text-xs sm:text-sm marathi-text hidden sm:block">Government of Maharashtra</p>
+              <div className="text-white min-w-0">
+                <h1 className="text-xs sm:text-sm md:text-lg font-semibold leading-tight truncate">Maharashtra Water Resources Department</h1>
+                <p className="text-white/80 text-xs marathi-text hidden sm:block">Government of Maharashtra</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4 text-white/90">
-              <div className="text-right">
+            <div className="flex items-center space-x-2 text-white/90 flex-shrink-0">
+              <div className="text-right hidden md:block">
                 <p className="text-sm font-medium text-white">Corporation Admin</p>
                 <p className="text-sm text-white/80">Krishna Corporation</p>
               </div>
-              <select className="px-3 py-1 text-sm border border-white/20 rounded-md bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 transition-colors">
-                <option className="text-gray-900">English</option>
-                <option className="text-gray-900">मराठी</option>
+              <select className="px-2 py-1 text-xs border border-white/20 rounded-md bg-white/10 text-white backdrop-blur-sm hover:bg-white/20 transition-colors">
+                <option className="text-gray-900">EN</option>
+                <option className="text-gray-900">MR</option>
               </select>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-sm border border-white/20 rounded-lg hover:bg-white/10 transition-colors text-white/90"
+                className="px-2 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm border border-white/20 rounded-lg hover:bg-white/10 transition-colors text-white/90"
               >
                 Logout
               </button>
@@ -171,10 +182,20 @@ export default function AdminDashboard() {
           </div>
         </header>
 
-        <div className="flex">
+        <div className="flex relative">
+          {/* Mobile Sidebar Overlay */}
+          {isMobileMenuOpen && (
+            <div 
+              className="fixed inset-0 z-40 md:hidden bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+            ></div>
+          )}
+
           {/* Sidebar */}
-          <aside className="relative z-10 hidden md:block w-64 bg-white/10 backdrop-blur-md border-r border-white/20 min-h-[calc(100vh-80px)]">
-            <div className="p-4">
+          <aside className={`fixed inset-y-0 left-0 z-50 w-64 bg-white/10 backdrop-blur-md border-r border-white/20 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${
+            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:block`}>
+            <div className="p-4 h-full overflow-y-auto">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
                   <Users className="w-6 h-6 text-white" />
@@ -191,7 +212,10 @@ export default function AdminDashboard() {
                   <hr></hr>
                 </div>
                 <button
-                  onClick={() => setActiveSection('dashboard')}
+                  onClick={() => {
+                    setActiveSection('dashboard')
+                    setIsMobileMenuOpen(false)
+                  }}
                   className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                     activeSection === 'dashboard' 
                       ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30' 
@@ -202,7 +226,10 @@ export default function AdminDashboard() {
                   <span>Dashboard Overview</span>
                 </button>
                 <button
-                  onClick={() => setActiveSection('applications')}
+                  onClick={() => {
+                    setActiveSection('applications')
+                    setIsMobileMenuOpen(false)
+                  }}
                   className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
                     activeSection === 'applications' 
                       ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30' 
@@ -218,14 +245,20 @@ export default function AdminDashboard() {
                   <hr></hr>
                 </div>
                 <button
-                  onClick={() => toast('Reports functionality will be implemented here', { icon: 'ℹ️' })}
+                  onClick={() => {
+                    toast('Reports functionality will be implemented here', { icon: 'ℹ️' })
+                    setIsMobileMenuOpen(false)
+                  }}
                   className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors text-white/80 hover:bg-white/10 hover:text-white"
                 >
                   <FileText className="w-5 h-5" />
                   <span>Reports</span>
                 </button>
                 <button
-                  onClick={() => toast('Analytics functionality will be implemented here', { icon: 'ℹ️' })}
+                  onClick={() => {
+                    toast('Analytics functionality will be implemented here', { icon: 'ℹ️' })
+                    setIsMobileMenuOpen(false)
+                  }}
                   className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors text-white/80 hover:bg-white/10 hover:text-white"
                 >
                   <BarChart3 className="w-5 h-5" />
@@ -236,7 +269,7 @@ export default function AdminDashboard() {
           </aside>
 
           {/* Main Content */}
-          <main className="relative z-10 flex-1 p-4 sm:p-6">
+          <main className="relative z-10 flex-1 p-4 sm:p-6 md:ml-0 w-full min-w-0">
             {activeSection === 'dashboard' ? (
               <>
                 <div className="flex items-center justify-between mb-6">
@@ -381,8 +414,8 @@ export default function AdminDashboard() {
 
                 {/* Search and Filters */}
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 mb-6 shadow-lg">
-                  <div className="flex flex-col md:flex-row gap-4">
-                    <div className="flex-1">
+                  <div className="flex flex-col gap-4">
+                    <div className="w-full">
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/50" />
                         <input
@@ -394,11 +427,11 @@ export default function AdminDashboard() {
                         />
                       </div>
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
                       <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent backdrop-blur-sm"
+                        className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent backdrop-blur-sm flex-1"
                       >
                         <option className="text-gray-900">All Status</option>
                         <option className="text-gray-900">Under Review</option>
@@ -409,7 +442,7 @@ export default function AdminDashboard() {
                       <select
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent backdrop-blur-sm"
+                        className="px-4 py-2 bg-white/10 border border-white/20 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent backdrop-blur-sm flex-1"
                       >
                         <option className="text-gray-900">All Categories</option>
                         <option className="text-gray-900">MAJOR</option>
@@ -422,57 +455,57 @@ export default function AdminDashboard() {
                 {/* Applications Table */}
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg shadow-lg overflow-hidden">
                   <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-white/5">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">-</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">Application ID</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">WUA Name</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">District</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">Category</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">Status</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">Submission Date</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/10">
-                        {applications.map((app, index) => (
-                          <tr key={index} className="hover:bg-white/5 transition-colors">
-                            <td className="px-4 py-3 text-sm text-white">-</td>
-                            <td className="px-4 py-3 text-sm text-white">{app.id}</td>
-                            <td className="px-4 py-3 text-sm text-white marathi-text">{app.wuaName}</td>
-                            <td className="px-4 py-3 text-sm text-white">{app.district}</td>
-                            <td className="px-4 py-3">
-                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${app.category === 'MAJOR' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
-                                {app.category}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(app.status)}`}>
-                                {app.status}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-sm text-white">{app.submissionDate}</td>
-                            <td className="px-4 py-3">
-                              <div className="flex space-x-2">
-                                <button 
-                                  onClick={() => handleViewApplication(app)}
-                                  className="px-3 py-1 text-xs bg-gray-500/20 text-white border border-gray-500/30 rounded hover:bg-gray-500/30 transition-colors"
-                                >
-                                  View
-                                </button>
-                                <button className="px-3 py-1 text-xs bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded hover:bg-teal-500/30 transition-colors">
-                                  Evaluation
-                                </button>
-                                <button className="px-3 py-1 text-xs bg-green-500/20 text-green-300 border border-green-500/30 rounded hover:bg-green-500/30 transition-colors">
-                                  Forward
-                                </button>
-                              </div>
-                            </td>
+                    <div className="min-w-full">
+                      <table className="w-full min-w-[800px]">
+                        <thead className="bg-white/5">
+                          <tr>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">App ID</th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider min-w-[150px]">WUA Name</th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">District</th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">Category</th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">Status</th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider">Date</th>
+                            <th className="px-3 py-3 text-left text-xs font-medium text-white/70 uppercase tracking-wider min-w-[200px]">Actions</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-white/10">
+                          {applications.map((app, index) => (
+                            <tr key={index} className="hover:bg-white/5 transition-colors">
+                              <td className="px-3 py-3 text-sm text-white">{app.id}</td>
+                              <td className="px-3 py-3 text-sm text-white marathi-text">{app.wuaName}</td>
+                              <td className="px-3 py-3 text-sm text-white">{app.district}</td>
+                              <td className="px-3 py-3">
+                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${app.category === 'MAJOR' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
+                                  {app.category}
+                                </span>
+                              </td>
+                              <td className="px-3 py-3">
+                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(app.status)}`}>
+                                  {app.status}
+                                </span>
+                              </td>
+                              <td className="px-3 py-3 text-sm text-white">{app.submissionDate}</td>
+                              <td className="px-3 py-3">
+                                <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                                  <button 
+                                    onClick={() => handleViewApplication(app)}
+                                    className="px-2 py-1 text-xs bg-gray-500/20 text-white border border-gray-500/30 rounded hover:bg-gray-500/30 transition-colors"
+                                  >
+                                    View
+                                  </button>
+                                  <button className="px-2 py-1 text-xs bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded hover:bg-teal-500/30 transition-colors">
+                                    Eval
+                                  </button>
+                                  <button className="px-2 py-1 text-xs bg-green-500/20 text-green-300 border border-green-500/30 rounded hover:bg-green-500/30 transition-colors">
+                                    Forward
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </>
@@ -488,15 +521,15 @@ export default function AdminDashboard() {
         {/* Application Details Modal */}
         {isModalOpen && selectedApplication && (
           <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div className="flex items-center justify-center min-h-screen p-4 text-center">
               {/* Background overlay */}
               <div className="fixed inset-0 transition-opacity bg-slate-900/80 backdrop-blur-sm" onClick={handleCloseModal}></div>
               
               {/* Modal panel */}
-              <div className="inline-block w-full max-w-4xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-gradient-to-br from-slate-800 to-slate-700 shadow-2xl rounded-2xl border border-slate-600/50">
+              <div className="inline-block w-full max-w-4xl p-4 sm:p-6 my-4 sm:my-8 overflow-hidden text-left align-middle transition-all transform bg-gradient-to-br from-slate-800 to-slate-700 shadow-2xl rounded-2xl border border-slate-600/50 relative">
                 {/* Modal Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-slate-100">Application Details</h3>
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-100">Application Details</h3>
                   <button
                     onClick={handleCloseModal}
                     className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-600/30 rounded-lg transition-colors"
@@ -506,9 +539,9 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Organization Information */}
-                <div className="mb-8">
-                  <h4 className="text-lg font-semibold text-slate-200 mb-4">Organization Information</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="mb-6 sm:mb-8">
+                  <h4 className="text-base sm:text-lg font-semibold text-slate-200 mb-3 sm:mb-4">Organization Information</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     <div className="bg-slate-600/20 border border-slate-500/30 rounded-lg p-3 hover:bg-slate-600/30 transition-colors">
                       <p className="text-xs text-slate-400 font-medium mb-1">WUA Name:</p>
                       <p className="text-sm text-slate-100 font-medium marathi-text">{selectedApplication.wuaName}</p>
@@ -521,7 +554,7 @@ export default function AdminDashboard() {
                       <p className="text-xs text-slate-400 font-medium mb-1">District:</p>
                       <p className="text-sm text-slate-100 font-medium">{selectedApplication.district}</p>
                     </div>
-                    <div className="bg-slate-600/20 border border-slate-500/30 rounded-lg p-3 hover:bg-slate-600/30 transition-colors">
+                    <div className="bg-slate-600/20 border border-slate-500/30 rounded-lg p-3 hover:bg-slate-600/30 transition-colors sm:col-span-2 lg:col-span-1">
                       <p className="text-xs text-slate-400 font-medium mb-1">Category:</p>
                       <p className="text-sm text-slate-100 font-medium">{selectedApplication.category === 'MINOR' ? 'Minor Projects' : 'Major Projects'}</p>
                     </div>
@@ -529,9 +562,9 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Self-Assessment Breakdown */}
-                <div className="mb-8">
-                  <h4 className="text-lg font-semibold text-slate-200 mb-4">Self-Assessment Breakdown</h4>
-                  <div className="space-y-3">
+                <div className="mb-6 sm:mb-8">
+                  <h4 className="text-base sm:text-lg font-semibold text-slate-200 mb-3 sm:mb-4">Self-Assessment Breakdown</h4>
+                  <div className="space-y-2 sm:space-y-3">
                     {[
                       { module: 'Module 1: Governance', status: 'Review' },
                       { module: 'Module 2: Water Management', status: 'Review' },
@@ -540,48 +573,30 @@ export default function AdminDashboard() {
                       { module: 'Module 5: Documentation & Data', status: 'Review' }
                     ].map((item, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-slate-600/15 border border-slate-500/20 rounded-lg hover:bg-slate-600/25 transition-colors">
-                        <span className="text-sm text-slate-200">{item.module}</span>
-                        <span className="text-sm text-sky-400 font-medium bg-sky-400/10 px-2 py-1 rounded-full">{item.status}</span>
+                        <span className="text-sm text-slate-200 flex-1 pr-2">{item.module}</span>
+                        <span className="text-xs sm:text-sm text-sky-400 font-medium bg-sky-400/10 px-2 py-1 rounded-full flex-shrink-0">{item.status}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Actions Row */}
-                {/* <div className="flex justify-center space-x-4 pt-6">
-                  <div className="text-right">
-                    <span className="block text-xs text-gray-600 font-medium mb-2">Actions</span>
-                    <div className="flex space-x-2">
-                      <button className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 rounded-lg transition-colors font-medium">
-                        View
-                      </button>
-                      <button className="px-4 py-2 text-sm bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded-lg transition-colors font-medium shadow-lg">
-                        Evaluation
-                      </button>
-                      <button className="px-4 py-2 text-sm bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg transition-colors font-medium shadow-lg">
-                        Forward
-                      </button>
-                    </div>
-                  </div>
-                </div> */}
-
                 {/* Modal Footer */}
-                <div className="flex justify-end space-x-3 pt-6 border-t border-slate-500/30">
+                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4 sm:pt-6 border-t border-slate-500/30">
                   <button
                     onClick={handleCloseModal}
-                    className="px-6 py-2 text-sm text-slate-300 hover:text-slate-100 hover:bg-slate-600/30 border border-slate-500/30 rounded-lg transition-colors"
+                    className="px-4 sm:px-6 py-2 text-sm text-slate-300 hover:text-slate-100 hover:bg-slate-600/30 border border-slate-500/30 rounded-lg transition-colors"
                   >
                     Close
                   </button>
                   <button
                     onClick={() => toast('Start Evaluation functionality will be implemented here', { icon: 'ℹ️' })}
-                    className="px-6 py-2 text-sm bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white rounded-lg transition-colors shadow-lg"
+                    className="px-4 sm:px-6 py-2 text-sm bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white rounded-lg transition-colors shadow-lg"
                   >
                     Start Evaluation
                   </button>
                   <button
                     onClick={() => toast('Forward functionality will be implemented here', { icon: 'ℹ️' })}
-                    className="px-6 py-2 text-sm bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg transition-colors shadow-lg"
+                    className="px-4 sm:px-6 py-2 text-sm bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg transition-colors shadow-lg"
                   >
                     Forward
                   </button>
