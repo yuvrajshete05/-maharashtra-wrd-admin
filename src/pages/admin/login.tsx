@@ -6,7 +6,6 @@ import { Eye, EyeOff, User, Lock, LogIn } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 interface LoginFormData {
-  adminLevel: string
   username: string
   password: string
 }
@@ -31,13 +30,13 @@ export default function AdminLogin() {
       await new Promise(resolve => setTimeout(resolve, 1500))
       
       // Allow any user to login (removed specific credential check)
-      if (data.username && data.password && data.adminLevel) {
+      if (data.username && data.password) {
         toast.success(`Login successful! Welcome ${data.username}`)
         // Store user data in localStorage
         localStorage.setItem('adminToken', 'mock_jwt_token')
         localStorage.setItem('adminData', JSON.stringify({
           username: data.username,
-          adminLevel: data.adminLevel,
+          adminLevel: 'admin', // Default admin level
           name: data.username,
           loginTime: new Date().toISOString()
         }))
@@ -119,26 +118,6 @@ export default function AdminLogin() {
 
             {/* Login Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Admin Level */}
-              <div>
-                <label htmlFor="adminLevel" className="block text-sm font-medium text-gray-700 mb-2">
-                  Admin Level
-                </label>
-                <select
-                  {...register('adminLevel', { required: 'Please select admin level' })}
-                  className="government-input"
-                  disabled={isLoading}
-                >
-                  <option value="">Select Admin Level</option>
-                  <option value="super-admin">Super Admin</option>
-                  <option value="admin">Admin</option>
-                  <option value="moderator">Moderator</option>
-                </select>
-                {errors.adminLevel && (
-                  <p className="mt-1 text-sm text-red-600">{errors.adminLevel.message}</p>
-                )}
-              </div>
-
               {/* Username */}
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
