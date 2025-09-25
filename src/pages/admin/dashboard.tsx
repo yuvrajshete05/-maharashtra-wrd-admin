@@ -142,17 +142,17 @@ export default function AdminDashboard() {
 
         {/* Header */}
         <header className="relative z-10 bg-white/10 backdrop-blur-md border-b border-white/20">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-sm p-[5mm]">महाराष्ट्र</span>
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-xs sm:text-sm p-[3mm] sm:p-[5mm]">महाराष्ट्र</span>
               </div>
               <div className="text-white">
-                <h1 className="text-lg font-semibold">Maharashtra Water Resources Department</h1>
-                <p className="text-white/80 text-sm marathi-text">Government of Maharashtra</p>
+                <h1 className="text-sm sm:text-lg font-semibold">Maharashtra Water Resources Department</h1>
+                <p className="text-white/80 text-xs sm:text-sm marathi-text hidden sm:block">Government of Maharashtra</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4 text-white/90">
+            <div className="flex items-center space-x-2 sm:space-x-4 text-white/90">
               <div className="text-right">
                 <p className="text-sm font-medium text-white">Corporation Admin</p>
                 <p className="text-sm text-white/80">Krishna Corporation</p>
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
 
         <div className="flex">
           {/* Sidebar */}
-          <aside className="relative z-10 w-64 bg-white/10 backdrop-blur-md border-r border-white/20 min-h-[calc(100vh-80px)]">
+          <aside className="relative z-10 hidden md:block w-64 bg-white/10 backdrop-blur-md border-r border-white/20 min-h-[calc(100vh-80px)]">
             <div className="p-4">
               <div className="flex items-center space-x-3 mb-6">
                 <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30">
@@ -236,7 +236,7 @@ export default function AdminDashboard() {
           </aside>
 
           {/* Main Content */}
-          <main className="relative z-10 flex-1 p-6">
+          <main className="relative z-10 flex-1 p-4 sm:p-6">
             {activeSection === 'dashboard' ? (
               <>
                 <div className="flex items-center justify-between mb-6">
