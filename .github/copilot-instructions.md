@@ -84,6 +84,8 @@ interface Application {
 - **Icons**: Lucide React icons (consistent 16-20px sizes)
 - **Typography**: Inter for Latin text, Noto Sans Devanagari for Marathi
 - **Status badges**: Color-coded with specific background/text combinations
+- **Mobile responsiveness**: Use Tailwind responsive classes (sm:, md:, lg:), avoid fixed units like mm
+- **Responsive patterns**: Headers scale down on mobile, sidebars hidden on mobile (md:block), responsive padding/margins
 
 ### Component Structure
 ```tsx

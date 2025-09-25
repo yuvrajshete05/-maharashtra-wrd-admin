@@ -65,7 +65,7 @@ export default function AdminLogin() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-50">
           <div className="w-full h-full" style={{
@@ -74,35 +74,36 @@ export default function AdminLogin() {
         </div>
         
         {/* Header */}
-        <div className="absolute top-0 left-0 right-0 z-10">
-          <div className="bg-white/10 backdrop-blur-md border-b border-white/20">
-            <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+        <header className="relative z-10 bg-white/10 backdrop-blur-md border-b border-white/20 flex-shrink-0">
+          <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 sm:space-x-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2L2 7L12 12L22 7L12 2Z" />
                     <path d="M2 17L12 22L22 17" />
                     <path d="M2 12L12 17L22 12" />
                   </svg>
                 </div>
-                <div className="text-white">
-                  <h1 className="font-semibold text-sm sm:text-lg">Maharashtra Water Resources Department</h1>
-                  <p className="text-white/80 text-xs sm:text-sm marathi-text hidden sm:block">महाराष्ट्र जल संसाधन विभाग</p>
+                <div className="text-white min-w-0">
+                  <h1 className="font-semibold text-xs sm:text-sm md:text-lg leading-tight">Maharashtra Water Resources Department</h1>
+                  <p className="text-white/80 text-xs marathi-text hidden sm:block">महाराष्ट्र जल संसाधन विभाग</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2 sm:space-x-4 text-white/90">
+              <div className="flex items-center text-white/90 flex-shrink-0">
                 <button className="px-2 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm hover:text-white transition-colors border border-white/20 rounded-lg hover:bg-white/10">
                   English
                 </button>
               </div>
             </div>
           </div>
-        </div>
+        </header>
 
         {/* Main Content */}
-        <div className="relative z-10 w-full max-w-sm mx-auto px-4 sm:px-0 mt-20 sm:mt-24 md:mt-32">
-          {/* Login Card */}
-          <div className="government-card p-4 sm:p-6 backdrop-blur-sm bg-white/95">
+        <main className="relative z-10 flex-1 flex items-center justify-center p-4">
+          <div className="w-full max-w-sm">
+            {/* Login Card */}
+            <div className="government-card p-4 sm:p-6 backdrop-blur-sm bg-white/95">
             {/* Logo Section */}
             <div className="text-center mb-6">
               <div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
@@ -241,6 +242,7 @@ export default function AdminLogin() {
             <p className="marathi-text mt-1">महाराष्ट्र शासन | Government of Maharashtra</p> */}
           </div>
         </div>
+        </main>
       </div>
     </>
   )
