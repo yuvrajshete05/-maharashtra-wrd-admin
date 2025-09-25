@@ -64,33 +64,22 @@ export default function AdminLogin() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-50">
-          <div className="w-full h-full" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23374151' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}></div>
-        </div>
-        
+      <div className="min-h-screen bg-gray-200 flex flex-col">
         {/* Header */}
-        <header className="relative z-10 bg-white/10 backdrop-blur-md border-b border-white/20 flex-shrink-0">
+        <header className="bg-white shadow-sm">
           <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 sm:space-x-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-4 h-4 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" />
-                    <path d="M2 17L12 22L22 17" />
-                    <path d="M2 12L12 17L22 12" />
-                  </svg>
+                <div className="w-12 h-12 sm:w-16 sm:h-12 bg-teal-500 rounded-lg flex items-center justify-center flex-shrink-0 px-2 py-1">
+                  <span className="text-white font-bold text-xs sm:text-sm marathi-text">महाराष्ट्र</span>
                 </div>
-                <div className="text-white min-w-0">
+                <div className="text-gray-800 min-w-0">
                   <h1 className="font-semibold text-xs sm:text-sm md:text-lg leading-tight">Maharashtra Water Resources Department</h1>
-                  <p className="text-white/80 text-xs marathi-text hidden sm:block">महाराष्ट्र जल संसाधन विभाग</p>
+                  <p className="text-gray-600 text-xs marathi-text hidden sm:block">Government of Maharashtra</p>
                 </div>
               </div>
-              <div className="flex items-center text-white/90 flex-shrink-0">
-                <button className="px-2 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm hover:text-white transition-colors border border-white/20 rounded-lg hover:bg-white/10">
+              <div className="flex items-center text-gray-700 flex-shrink-0">
+                <button className="px-2 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm text-white transition-colors border border-green-900 rounded-lg bg-green-900 hover:bg-green-950">
                   English
                 </button>
               </div>
@@ -99,19 +88,12 @@ export default function AdminLogin() {
         </header>
 
         {/* Main Content */}
-        <main className="relative z-10 flex-1 flex items-center justify-center p-4">
+        <main className="flex-1 flex items-center justify-center p-4 bg-gray-200">
           <div className="w-full max-w-sm">
             {/* Login Card */}
-            <div className="government-card p-4 sm:p-6 backdrop-blur-sm bg-white/95">
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
             {/* Logo Section */}
             <div className="text-center mb-6">
-              <div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
-                <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L2 7L12 12L22 7L12 2Z" />
-                  <path d="M2 17L12 22L22 17" />
-                  <path d="M2 12L12 17L22 12" />
-                </svg>
-              </div>
               <h2 className="text-xl font-bold text-gray-900 mb-2">Admin Login</h2>
               <p className="text-gray-600 text-xs">Punyashlok Ahilyabai Holkar Award Management System</p>
             </div>
@@ -133,9 +115,10 @@ export default function AdminLogin() {
                       required: 'Username is required',
                       minLength: { value: 3, message: 'Username must be at least 3 characters' }
                     })}
-                    className="government-input pl-10"
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                     placeholder="Enter Username"
                     disabled={isLoading}
+                    style={{ backgroundColor: '#F0F0F0' }}
                   />
                 </div>
                 {errors.username && (
@@ -158,9 +141,10 @@ export default function AdminLogin() {
                       required: 'Password is required',
                       minLength: { value: 6, message: 'Password must be at least 6 characters' }
                     })}
-                    className="government-input pl-10 pr-10"
+                    className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                     placeholder="Enter Password"
                     disabled={isLoading}
+                    style={{ backgroundColor: '#F0F0F0' }}
                   />
                   <button
                     type="button"
@@ -184,7 +168,7 @@ export default function AdminLogin() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="government-button flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 px-4 rounded-md font-medium transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
               >
                 {isLoading ? (
                   <>
@@ -204,7 +188,7 @@ export default function AdminLogin() {
             <div className="mt-4 text-center">
               <a
                 href="#"
-                className="text-sm text-blue-600 hover:text-blue-500 transition-colors"
+                className="text-sm text-teal-600 hover:text-teal-500 transition-colors"
                 onClick={(e) => {
                   e.preventDefault()
                   toast('Back to homepage functionality would be implemented here', { icon: 'ℹ️' })
@@ -213,12 +197,6 @@ export default function AdminLogin() {
                 Back To homepage
               </a>
             </div>
-          </div>
-
-          {/* Footer Text */}
-          <div className="text-center mt-6 text-white/70 text-sm">
-            {/* <p>© 2025 Maharashtra Water Resources Department. All rights reserved.</p>
-            <p className="marathi-text mt-1">महाराष्ट्र शासन | Government of Maharashtra</p> */}
           </div>
         </div>
         </main>

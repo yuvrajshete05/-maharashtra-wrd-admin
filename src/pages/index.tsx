@@ -45,21 +45,21 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+      <div className="min-h-screen bg-gray-200">
         {/* Header */}
-        <header className="bg-slate-800/95 backdrop-blur-md border-b border-slate-700/50 sticky top-0 z-50">
+        <header className="bg-white shadow-sm sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-4">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-sm sm:text-lg">M</span>
+                <div className="w-12 h-12 sm:w-16 sm:h-12 bg-teal-500 rounded-lg flex items-center justify-center flex-shrink-0 px-2 py-1">
+                  <span className="text-white font-bold text-xs sm:text-sm marathi-text">महाराष्ट्र</span>
                 </div>
                 <div className="hidden sm:block">
-                  <h1 className="text-sm sm:text-lg font-semibold text-white">Maharashtra Government</h1>
-                  <p className="text-xs text-slate-300">Water Resources Department</p>
+                  <h1 className="text-sm sm:text-lg font-semibold text-gray-800">Maharashtra Government</h1>
+                  <p className="text-xs text-gray-600">Water Resources Department</p>
                 </div>
                 <div className="sm:hidden">
-                  <h1 className="text-sm font-semibold text-white">Maharashtra WRD</h1>
+                  <h1 className="text-sm font-semibold text-gray-800">Maharashtra WRD</h1>
                 </div>
               </div>
               
@@ -70,8 +70,8 @@ export default function Home() {
                     onClick={() => handleSectionClick(section)}
                     className={`capitalize font-medium transition-colors text-sm ${
                       activeSection === section 
-                        ? 'text-blue-400' 
-                        : 'text-slate-300 hover:text-white'
+                        ? 'text-teal-600' 
+                        : 'text-gray-600 hover:text-gray-800'
                     }`}
                   >
                     {section}
@@ -83,36 +83,36 @@ export default function Home() {
                 {/* Desktop buttons */}
                 <div className="hidden md:flex items-center space-x-3">
                   <Link href="/welcome">
-                    <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-semibold transition-all text-sm">
+                    <button className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold transition-all text-sm">
                       Login/Register
                     </button>
                   </Link>
-                  <select className="bg-slate-700/50 border border-slate-600 rounded px-2 py-2 text-white text-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option className="text-gray-900">MR</option>
-                    <option className="text-gray-900">EN</option>
+                  <select className="bg-gray-100 border border-gray-300 rounded px-2 py-2 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500">
+                    <option>MR</option>
+                    <option>EN</option>
                   </select>
                   <Link href="/admin/login">
-                    <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-semibold transition-all text-sm">
+                    <button className="bg-green-900 hover:bg-green-950 text-white px-4 py-2 rounded-lg font-semibold transition-all text-sm">
                       Admin
                     </button>
                   </Link>
                 </div>
                 
                 {/* Mobile-only language selector */}
-                <select className="md:hidden bg-slate-700/50 border border-slate-600 rounded px-2 py-1 text-white text-xs backdrop-blur-sm focus:outline-none">
-                  <option className="text-gray-900">MR</option>
-                  <option className="text-gray-900">EN</option>
+                <select className="md:hidden bg-gray-100 border border-gray-300 rounded px-2 py-1 text-gray-800 text-xs focus:outline-none">
+                  <option>MR</option>
+                  <option>EN</option>
                 </select>
                 
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="lg:hidden text-white p-2 hover:bg-slate-700 rounded-lg transition-colors"
+                  className="lg:hidden text-gray-800 p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
                   <div className="w-5 h-5 flex flex-col justify-center space-y-1">
-                    <div className={`w-full h-0.5 bg-white transition-transform ${isMenuOpen ? 'rotate-45 translate-y-1' : ''}`}></div>
-                    <div className={`w-full h-0.5 bg-white transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`}></div>
-                    <div className={`w-full h-0.5 bg-white transition-transform ${isMenuOpen ? '-rotate-45 -translate-y-1' : ''}`}></div>
+                    <div className={`w-full h-0.5 bg-gray-800 transition-transform ${isMenuOpen ? 'rotate-45 translate-y-1' : ''}`}></div>
+                    <div className={`w-full h-0.5 bg-gray-800 transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`}></div>
+                    <div className={`w-full h-0.5 bg-gray-800 transition-transform ${isMenuOpen ? '-rotate-45 -translate-y-1' : ''}`}></div>
                   </div>
                 </button>
               </div>
@@ -120,7 +120,7 @@ export default function Home() {
             
             {/* Mobile Menu */}
             {isMenuOpen && (
-              <div className="lg:hidden bg-slate-800/95 backdrop-blur-md border-t border-slate-700/50">
+              <div className="lg:hidden bg-white border-t border-gray-200">
                 <div className="px-4 py-4 space-y-3">
                   {/* Navigation Links */}
                   {['home', 'about', 'apply', 'status', 'results', 'contact'].map((section) => (
@@ -129,8 +129,8 @@ export default function Home() {
                       onClick={() => handleSectionClick(section)}
                       className={`block w-full text-left capitalize py-3 px-4 rounded-lg transition-colors ${
                         activeSection === section 
-                          ? 'text-blue-400 bg-slate-700/50' 
-                          : 'text-slate-300 hover:text-white hover:bg-slate-700/30'
+                          ? 'text-teal-600 bg-gray-100' 
+                          : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                       }`}
                     >
                       {section}
@@ -138,14 +138,14 @@ export default function Home() {
                   ))}
                   
                   {/* Divider */}
-                  <div className="border-t border-slate-600/50 my-3"></div>
+                  <div className="border-t border-gray-200 my-3"></div>
                   
                   {/* Action Buttons */}
                   <div className="space-y-3">
                     <Link href="/welcome" className="block">
                       <button 
                         onClick={() => setIsMenuOpen(false)}
-                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-4 rounded-lg font-semibold transition-all text-sm"
+                        className="w-full bg-teal-500 hover:bg-teal-600 text-white py-3 px-4 rounded-lg font-semibold transition-all text-sm"
                       >
                         Login/Register
                       </button>
@@ -153,7 +153,7 @@ export default function Home() {
                     <Link href="/admin/login" className="block">
                       <button 
                         onClick={() => setIsMenuOpen(false)}
-                        className="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white py-3 px-4 rounded-lg font-semibold transition-all text-sm"
+                        className="w-full bg-green-900 hover:bg-green-950 text-white py-3 px-4 rounded-lg font-semibold transition-all text-sm"
                       >
                         Admin Login
                       </button>
@@ -166,41 +166,41 @@ export default function Home() {
         </header>
 
         {/* Hero Section with Professional Design */}
-        <section className="relative py-24 overflow-hidden">
+        <section className="relative py-24 overflow-hidden bg-white">
           {/* Background Elements */}
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-slate-900/20"></div>
-          <div className="absolute top-20 left-20 w-72 h-72 bg-blue-600/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-indigo-600/5 rounded-full blur-3xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-50/50 to-gray-50/50"></div>
+          <div className="absolute top-20 left-20 w-72 h-72 bg-teal-100/30 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-gray-100/30 rounded-full blur-3xl"></div>
           
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
-                <div className="inline-flex items-center px-4 py-2 bg-blue-600/10 border border-blue-500/20 rounded-full text-blue-400 text-sm font-medium mb-8">
-                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
+                <div className="inline-flex items-center px-4 py-2 bg-teal-50 border border-teal-200 rounded-full text-teal-700 text-sm font-medium mb-8">
+                  <span className="w-2 h-2 bg-teal-500 rounded-full mr-2 animate-pulse"></span>
                   Government of Maharashtra Initiative
                 </div>
                 
                 <div className="transition-all duration-1000 ease-in-out">
-                  <h1 className="text-5xl lg:text-7xl font-bold text-white mb-8 leading-tight">
+                  <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight">
                     Punyashlok
-                    <span className="block text-blue-400">Ahilyabai</span>
-                    <span className="block text-slate-300">Holkar Award</span>
+                    <span className="block text-teal-600">Ahilyabai</span>
+                    <span className="block text-gray-700">Holkar Award</span>
                   </h1>
-                  <h2 className="text-2xl lg:text-3xl font-semibold text-slate-300 mb-6">
+                  <h2 className="text-2xl lg:text-3xl font-semibold text-gray-700 mb-6">
                     Water Users Association Management Excellence
                   </h2>
-                  <p className="text-xl text-slate-400 mb-10 leading-relaxed max-w-2xl">
+                  <p className="text-xl text-gray-600 mb-10 leading-relaxed max-w-2xl">
                     Recognizing outstanding achievements in sustainable water management through community participation and innovative governance practices across Maharashtra.
                   </p>
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-6 mb-10">
                   <Link href="/welcome">
-                    <button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-xl hover:shadow-blue-500/25">
+                    <button className="bg-teal-500 hover:bg-teal-600 text-white px-8 py-4 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-xl hover:shadow-teal-500/25">
                       Apply Now
                     </button>
                   </Link>
-                  <button className="border-2 border-slate-600 text-slate-300 hover:text-white hover:border-slate-500 px-8 py-4 rounded-xl font-semibold backdrop-blur-sm transition-all transform hover:scale-105">
+                  <button className="border-2 border-gray-300 text-gray-700 hover:text-gray-900 hover:border-gray-400 px-8 py-4 rounded-xl font-semibold transition-all transform hover:scale-105">
                     Learn More
                   </button>
                 </div>
@@ -230,44 +230,44 @@ export default function Home() {
         </section>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 bg-gray-200">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             
             {/* Professional Sidebar */}
             <div className="lg:col-span-1 space-y-8">
               
               {/* Latest Updates - Professional */}
-              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-700/50 transition-all">
-                <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full mr-3 animate-pulse"></div>
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                  <div className="w-3 h-3 bg-teal-500 rounded-full mr-3 animate-pulse"></div>
                   Latest Updates
                 </h3>
                 <div className="space-y-4">
-                  <div className="p-4 bg-slate-700/30 rounded-xl hover:bg-slate-700/50 transition-colors cursor-pointer border border-slate-600/30">
-                    <p className="text-blue-400 font-semibold text-sm mb-1">Sept 19, 2025</p>
-                    <p className="text-slate-200 text-sm">Application Portal Opens</p>
-                    <p className="text-slate-300 text-xs">Online application system is now available for submissions</p>
+                  <div className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100">
+                    <p className="text-teal-600 font-semibold text-sm mb-1">Sept 19, 2025</p>
+                    <p className="text-gray-900 text-sm">Application Portal Opens</p>
+                    <p className="text-gray-600 text-xs">Online application system is now available for submissions</p>
                   </div>
-                  <div className="p-4 bg-slate-700/30 rounded-xl hover:bg-slate-700/50 transition-colors cursor-pointer border border-slate-600/30">
-                    <p className="text-blue-400 font-semibold text-sm mb-1">Sept 15, 2025</p>
-                    <p className="text-slate-200 text-sm">Guidelines Updated</p>
-                    <p className="text-slate-300 text-xs">New guidelines and self-assessment forms released</p>
+                  <div className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer border border-gray-100">
+                    <p className="text-teal-600 font-semibold text-sm mb-1">Sept 15, 2025</p>
+                    <p className="text-gray-900 text-sm">Guidelines Updated</p>
+                    <p className="text-gray-600 text-xs">New guidelines and self-assessment forms released</p>
                   </div>
                 </div>
               </div>
 
               {/* Quick Links - Professional */}
-              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 hover:bg-slate-700/50 transition-all">
-                <h3 className="text-xl font-semibold text-white mb-6">Quick Links</h3>
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-lg transition-all">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6">Quick Links</h3>
                 <div className="space-y-3">
-                  <a href="#" className="flex items-center text-slate-300 hover:text-blue-400 p-3 rounded-xl hover:bg-slate-700/30 transition-all group">
-                    <div className="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-600/30">
-                      <span className="text-blue-400">📄</span>
+                  <a href="#" className="flex items-center text-gray-700 hover:text-teal-600 p-3 rounded-xl hover:bg-gray-50 transition-all group">
+                    <div className="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center mr-3 group-hover:bg-teal-100">
+                      <span className="text-teal-600">📄</span>
                     </div>
                     <span className="font-medium">Application Form</span>
                   </a>
-                  <a href="#" className="flex items-center text-slate-300 hover:text-blue-400 p-3 rounded-xl hover:bg-slate-700/30 transition-all group">
-                    <div className="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center mr-3 group-hover:bg-blue-600/30">
+                  <a href="#" className="flex items-center text-gray-700 hover:text-teal-600 p-3 rounded-xl hover:bg-gray-50 transition-all group">
+                    <div className="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center mr-3 group-hover:bg-teal-100">
                       <span className="text-blue-400">📋</span>
                     </div>
                     <span className="font-medium">Guidelines</span>
