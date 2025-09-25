@@ -230,8 +230,8 @@ export default function Home() {
         </section>
 
         {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             
             {/* Professional Sidebar */}
             <div className="lg:col-span-1 space-y-8">
@@ -386,15 +386,15 @@ export default function Home() {
             </div>
 
             {/* Main Content - Professional */}
-            <div className="lg:col-span-2 space-y-8">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
               
               {/* Competition Overview - Updated to match wireframe */}
-              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-8 hover:bg-slate-700/50 transition-all" style={{width: '160%'}}>
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent mb-6">
+              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 sm:p-6 lg:p-8 hover:bg-slate-700/50 transition-all w-full">
+                <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent mb-4 sm:mb-6">
                   Competition Overview
                 </h2>
-                <div className="space-y-6 text-slate-200">
-                  <p className="text-lg leading-relaxed">
+                <div className="space-y-4 sm:space-y-6 text-slate-200">
+                  <p className="text-base sm:text-lg leading-relaxed">
                     The Punyashlok Ahilyabai Holkar Award recognizes excellence in Water Users Association management across Maharashtra. This 
                     prestigious competition evaluates associations based on governance, water management, financial practices, and overall performance.
                   </p>
@@ -402,26 +402,26 @@ export default function Home() {
               </div>
 
               {/* Eligibility Criteria - Updated to match wireframe */}
-              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-8 hover:bg-slate-700/50 transition-all" style={{width: '160%'}}>
-                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                  <span className="w-8 h-8 bg-blue-600/20 rounded-lg flex items-center justify-center mr-4">
+              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 sm:p-6 lg:p-8 hover:bg-slate-700/50 transition-all w-full">
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center">
+                  <span className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600/20 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
                     <span className="text-blue-400">✓</span>
                   </span>
                   Eligibility Criteria
                 </h2>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/50 transition-all">
-                    <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center">
-                      <span className="w-6 h-6 bg-blue-600/20 rounded-lg flex items-center justify-center mr-3 text-sm">🏭</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 sm:p-6 hover:bg-slate-700/50 transition-all">
+                    <h3 className="text-base sm:text-lg font-semibold text-blue-400 mb-3 sm:mb-4 flex items-center">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600/20 rounded-lg flex items-center justify-center mr-2 sm:mr-3 text-sm">🏭</span>
                       Major/Medium Projects
                     </h3>
                     <p className="text-slate-300 text-sm">
                       Water Users Associations managing major and medium irrigation projects
                     </p>
                   </div>
-                  <div className="bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/50 transition-all">
-                    <h3 className="text-lg font-semibold text-blue-400 mb-4 flex items-center">
-                      <span className="w-6 h-6 bg-blue-600/20 rounded-lg flex items-center justify-center mr-3 text-sm">🌾</span>
+                  <div className="bg-slate-700/30 border border-slate-600/30 rounded-xl p-4 sm:p-6 hover:bg-slate-700/50 transition-all">
+                    <h3 className="text-base sm:text-lg font-semibold text-blue-400 mb-3 sm:mb-4 flex items-center">
+                      <span className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-600/20 rounded-lg flex items-center justify-center mr-2 sm:mr-3 text-sm">🌾</span>
                       Minor Projects
                     </h3>
                     <p className="text-slate-300 text-sm">
@@ -432,9 +432,9 @@ export default function Home() {
               </div>
 
               {/* Application Process - Updated to match wireframe */}
-              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-8 hover:bg-slate-700/50 transition-all" style={{width: '160%'}}>
-                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                  <span className="w-8 h-8 bg-indigo-600/20 rounded-lg flex items-center justify-center mr-4">
+              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 sm:p-6 lg:p-8 hover:bg-slate-700/50 transition-all w-full">
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center">
+                  <span className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-600/20 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
                     <span className="text-indigo-400">📋</span>
                   </span>
                   Application Process
@@ -471,14 +471,14 @@ export default function Home() {
               </div>
 
               {/* Evaluation Modules - New section matching wireframe */}
-              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-8 hover:bg-slate-700/50 transition-all" style={{width: '160%'}}>
-                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                  <span className="w-8 h-8 bg-purple-600/20 rounded-lg flex items-center justify-center mr-4">
+              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 sm:p-6 lg:p-8 hover:bg-slate-700/50 transition-all w-full">
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center">
+                  <span className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600/20 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
                     <span className="text-purple-400">⭐</span>
                   </span>
                   Evaluation Modules
                 </h2>
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-4">
                     <div className="bg-blue-600/10 border border-blue-500/20 rounded-xl p-5 hover:bg-blue-600/15 transition-all">
                       <div className="flex justify-between items-center mb-3">
@@ -539,77 +539,77 @@ export default function Home() {
               </div>
 
               {/* Timeline Section */}
-              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-8 hover:bg-slate-700/50 transition-all" style={{width: '160%'}}>
-                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-                  <span className="w-8 h-8 bg-indigo-600/20 rounded-lg flex items-center justify-center mr-4">
+              <div className="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-2xl p-4 sm:p-6 lg:p-8 hover:bg-slate-700/50 transition-all w-full">
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6 flex items-center">
+                  <span className="w-6 h-6 sm:w-8 sm:h-8 bg-indigo-600/20 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
                     <span className="text-indigo-400">📅</span>
                   </span>
                   Timeline
                 </h2>
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {/* April */}
-                  <div className="flex items-start space-x-4 p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
-                    <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600/30">
-                      <span className="text-blue-400 font-bold text-sm">Apr</span>
+                  <div className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600/30">
+                      <span className="text-blue-400 font-bold text-xs sm:text-sm">Apr</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Competition Announcement</h3>
-                      <p className="text-slate-300 text-sm">Official announcement of the award competition</p>
+                      <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">Competition Announcement</h3>
+                      <p className="text-slate-300 text-xs sm:text-sm">Official announcement of the award competition</p>
                     </div>
                   </div>
 
                   {/* May-June */}
-                  <div className="flex items-start space-x-4 p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
-                    <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-green-600/30">
+                  <div className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-green-600/30">
                       <span className="text-green-400 font-bold text-xs">May-Jun</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Awareness Campaign</h3>
-                      <p className="text-slate-300 text-sm">Information dissemination and promotion activities</p>
+                      <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">Awareness Campaign</h3>
+                      <p className="text-slate-300 text-xs sm:text-sm">Information dissemination and promotion activities</p>
                     </div>
                   </div>
 
                   {/* July-August */}
-                  <div className="flex items-start space-x-4 p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
-                    <div className="w-12 h-12 bg-yellow-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-600/30">
+                  <div className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-yellow-600/30">
                       <span className="text-yellow-400 font-bold text-xs">Jul-Aug</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Nomination Period</h3>
-                      <p className="text-slate-300 text-sm">Application submission window open</p>
+                      <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">Nomination Period</h3>
+                      <p className="text-slate-300 text-xs sm:text-sm">Application submission window open</p>
                     </div>
                   </div>
 
                   {/* Sep-Dec */}
-                  <div className="flex items-start space-x-4 p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
-                    <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-purple-600/30">
+                  <div className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-purple-600/30">
                       <span className="text-purple-400 font-bold text-xs">Sep-Dec</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Evaluation Process</h3>
-                      <p className="text-slate-300 text-sm">Review and assessment of all applications</p>
+                      <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">Evaluation Process</h3>
+                      <p className="text-slate-300 text-xs sm:text-sm">Review and assessment of all applications</p>
                     </div>
                   </div>
 
                   {/* January */}
-                  <div className="flex items-start space-x-4 p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
-                    <div className="w-12 h-12 bg-red-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-red-600/30">
-                      <span className="text-red-400 font-bold text-sm">Jan</span>
+                  <div className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-red-600/30">
+                      <span className="text-red-400 font-bold text-xs sm:text-sm">Jan</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Results Declaration</h3>
-                      <p className="text-slate-300 text-sm">Announcement of award winners</p>
+                      <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">Results Declaration</h3>
+                      <p className="text-slate-300 text-xs sm:text-sm">Announcement of award winners</p>
                     </div>
                   </div>
 
                   {/* February */}
-                  <div className="flex items-start space-x-4 p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
-                    <div className="w-12 h-12 bg-indigo-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-600/30">
-                      <span className="text-indigo-400 font-bold text-sm">Feb</span>
+                  <div className="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 bg-slate-700/30 border border-slate-600/30 rounded-xl hover:bg-slate-700/50 transition-all group">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-600/20 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-600/30">
+                      <span className="text-indigo-400 font-bold text-xs sm:text-sm">Feb</span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white mb-1">Award Ceremony</h3>
-                      <p className="text-slate-300 text-sm">Felicitation of winners and recognition event</p>
+                      <h3 className="font-semibold text-white mb-1 text-sm sm:text-base">Award Ceremony</h3>
+                      <p className="text-slate-300 text-xs sm:text-sm">Felicitation of winners and recognition event</p>
                     </div>
                   </div>
                 </div>
