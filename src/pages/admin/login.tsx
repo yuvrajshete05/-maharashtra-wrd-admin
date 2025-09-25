@@ -227,7 +227,7 @@ export default function AdminLogin() {
                 className="text-sm text-blue-600 hover:text-blue-500 transition-colors"
                 onClick={(e) => {
                   e.preventDefault()
-                  toast.info('Back to homepage functionality would be implemented here')
+                  toast('Back to homepage functionality would be implemented here', { icon: 'ℹ️' })
                 }}
               >
                 Back To homepage
