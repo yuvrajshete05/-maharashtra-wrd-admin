@@ -152,7 +152,7 @@ export default function Login() {
               </div>
 
               {/* Gender */}
-              <div>
+              {/* <div>
                 <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
                   Gender
                 </label>
@@ -169,7 +169,7 @@ export default function Login() {
                 {errors.gender && (
                   <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>
                 )}
-              </div>
+              </div> */}
 
               {/* Mobile Number */}
               <div>
