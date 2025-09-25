@@ -51,21 +51,24 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-lg">M</span>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-sm sm:text-lg">M</span>
                 </div>
-                <div>
-                  <h1 className="text-lg font-semibold text-white">Maharashtra Government</h1>
+                <div className="hidden sm:block">
+                  <h1 className="text-sm sm:text-lg font-semibold text-white">Maharashtra Government</h1>
                   <p className="text-xs text-slate-300">Water Resources Department</p>
+                </div>
+                <div className="sm:hidden">
+                  <h1 className="text-sm font-semibold text-white">Maharashtra WRD</h1>
                 </div>
               </div>
               
-              <nav className="hidden md:flex items-center space-x-8">
+              <nav className="hidden lg:flex items-center space-x-6">
                 {['home', 'about', 'apply', 'status', 'results', 'contact'].map((section) => (
                   <button
                     key={section}
                     onClick={() => handleSectionClick(section)}
-                    className={`capitalize font-medium transition-colors ${
+                    className={`capitalize font-medium transition-colors text-sm ${
                       activeSection === section 
                         ? 'text-blue-400' 
                         : 'text-slate-300 hover:text-white'
@@ -76,29 +79,37 @@ export default function Home() {
                 ))}
               </nav>
 
-              <div className="flex items-center space-x-4">
-                <Link href="/welcome">
-                  <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg">
-                    Login/Register
-                  </button>
-                </Link>
-                <select className="bg-slate-700/50 border border-slate-600 rounded px-3 py-2 text-white text-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                {/* Desktop buttons */}
+                <div className="hidden md:flex items-center space-x-3">
+                  <Link href="/welcome">
+                    <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-semibold transition-all text-sm">
+                      Login/Register
+                    </button>
+                  </Link>
+                  <select className="bg-slate-700/50 border border-slate-600 rounded px-2 py-2 text-white text-sm backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option className="text-gray-900">MR</option>
+                    <option className="text-gray-900">EN</option>
+                  </select>
+                  <Link href="/admin/login">
+                    <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg font-semibold transition-all text-sm">
+                      Admin
+                    </button>
+                  </Link>
+                </div>
+                
+                {/* Mobile-only language selector */}
+                <select className="md:hidden bg-slate-700/50 border border-slate-600 rounded px-2 py-1 text-white text-xs backdrop-blur-sm focus:outline-none">
                   <option className="text-gray-900">MR</option>
                   <option className="text-gray-900">EN</option>
                 </select>
                 
-                <Link href="/admin/login">
-                  <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-lg">
-                    Admin
-                  </button>
-                </Link>
-                
                 {/* Mobile Menu Button */}
                 <button
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="md:hidden text-white p-2 hover:bg-slate-700 rounded-lg transition-colors"
+                  className="lg:hidden text-white p-2 hover:bg-slate-700 rounded-lg transition-colors"
                 >
-                  <div className="w-6 h-6 flex flex-col justify-center space-y-1">
+                  <div className="w-5 h-5 flex flex-col justify-center space-y-1">
                     <div className={`w-full h-0.5 bg-white transition-transform ${isMenuOpen ? 'rotate-45 translate-y-1' : ''}`}></div>
                     <div className={`w-full h-0.5 bg-white transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`}></div>
                     <div className={`w-full h-0.5 bg-white transition-transform ${isMenuOpen ? '-rotate-45 -translate-y-1' : ''}`}></div>
@@ -109,8 +120,9 @@ export default function Home() {
             
             {/* Mobile Menu */}
             {isMenuOpen && (
-              <div className="md:hidden bg-slate-800/95 backdrop-blur-md border-t border-slate-700/50">
-                <div className="px-4 py-4 space-y-2">
+              <div className="lg:hidden bg-slate-800/95 backdrop-blur-md border-t border-slate-700/50">
+                <div className="px-4 py-4 space-y-3">
+                  {/* Navigation Links */}
                   {['home', 'about', 'apply', 'status', 'results', 'contact'].map((section) => (
                     <button
                       key={section}
@@ -124,6 +136,29 @@ export default function Home() {
                       {section}
                     </button>
                   ))}
+                  
+                  {/* Divider */}
+                  <div className="border-t border-slate-600/50 my-3"></div>
+                  
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
+                    <Link href="/welcome" className="block">
+                      <button 
+                        onClick={() => setIsMenuOpen(false)}
+                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-3 px-4 rounded-lg font-semibold transition-all text-sm"
+                      >
+                        Login/Register
+                      </button>
+                    </Link>
+                    <Link href="/admin/login" className="block">
+                      <button 
+                        onClick={() => setIsMenuOpen(false)}
+                        className="w-full bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white py-3 px-4 rounded-lg font-semibold transition-all text-sm"
+                      >
+                        Admin Login
+                      </button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}
