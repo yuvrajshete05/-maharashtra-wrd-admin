@@ -6,7 +6,7 @@ import { Eye, EyeOff, User, Lock, LogIn } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 interface LoginFormData {
-  username: string
+  email: string
   password: string
 }
 
@@ -26,18 +26,30 @@ export default function AdminLogin() {
     setIsLoading(true)
     
     try {
-      // Mock authentication - simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // Allow any user to login (removed specific credential check)
-      if (data.username && data.password) {
-        toast.success(`Login successful! Welcome ${data.username}`)
+      // Call our real login API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        toast.success(`Login successful! Welcome ${result.data.user.name}`)
+        
         // Store user data in localStorage
-        localStorage.setItem('adminToken', 'mock_jwt_token')
+        localStorage.setItem('adminToken', result.data.token)
         localStorage.setItem('adminData', JSON.stringify({
-          username: data.username,
-          adminLevel: 'admin', // Default admin level
-          name: data.username,
+          username: result.data.user.email,
+          adminLevel: result.data.user.userType,
+          userType: result.data.user.userType,
+          name: result.data.user.name,
           loginTime: new Date().toISOString()
         }))
         
@@ -46,9 +58,10 @@ export default function AdminLogin() {
           router.push('/admin/dashboard')
         }, 1000)
       } else {
-        toast.error('Please fill all required fields.')
+        toast.error(result.message || 'Login failed. Please try again.')
       }
     } catch (error) {
+      console.error('Login error:', error)
       toast.error('Login failed. Please try again.')
     } finally {
       setIsLoading(false)
@@ -100,29 +113,32 @@ export default function AdminLogin() {
 
             {/* Login Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Username */}
+              {/* Email */}
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                  Username
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <User className="h-5 w-5 text-gray-400" />
                   </div>
                   <input
-                    type="text"
-                    {...register('username', {
-                      required: 'Username is required',
-                      minLength: { value: 3, message: 'Username must be at least 3 characters' }
+                    type="email"
+                    {...register('email', {
+                      required: 'Email is required',
+                      pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: 'Invalid email address'
+                      }
                     })}
                     className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="Enter Username"
+                    placeholder="Enter Email"
                     disabled={isLoading}
                     style={{ backgroundColor: '#F0F0F0' }}
                   />
                 </div>
-                {errors.username && (
-                  <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
                 )}
               </div>
 

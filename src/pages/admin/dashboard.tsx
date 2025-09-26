@@ -23,6 +23,7 @@ interface AdminData {
   adminLevel: string
   name: string
   loginTime: string
+  userType?: string
 }
 
 interface Application {
@@ -80,6 +81,122 @@ export default function AdminDashboard() {
       router.push('/admin/login')
     }
   }, [router])
+
+  // Get role-specific welcome message
+  const getRoleBasedWelcome = () => {
+    if (!adminData) return ''
+    
+    const userType = adminData.userType || adminData.adminLevel
+    
+    switch (userType) {
+      case 'admin':
+        return 'Admin Dashboard - Full System Access'
+      case 'nominee':
+        return 'Nominee Dashboard - Submit Applications'
+      case 'circle_committee':
+        return 'Circle Committee Dashboard - Review Applications'
+      case 'corporation_committee':
+        return 'Corporation Committee Dashboard - Evaluate Applications'
+      case 'state_committee':
+        return 'State Committee Dashboard - Final Approval'
+      default:
+        return 'User Dashboard'
+    }
+  }
+
+  // Get role-specific navigation items
+  const getRoleBasedNavigation = () => {
+    if (!adminData) return []
+    
+    const userType = adminData.userType || adminData.adminLevel
+    
+    const baseNav = [
+      { key: 'dashboard', label: 'Dashboard Overview', icon: BarChart3 }
+    ]
+    
+    switch (userType) {
+      case 'admin':
+        return [
+          ...baseNav,
+          { key: 'applications', label: 'All Applications', icon: FileText },
+          { key: 'users', label: 'User Management', icon: Users },
+          { key: 'reports', label: 'System Reports', icon: BarChart3 }
+        ]
+      case 'nominee':
+        return [
+          ...baseNav,
+          { key: 'my-applications', label: 'My Applications', icon: FileText },
+          { key: 'submit', label: 'Submit New Application', icon: FileText }
+        ]
+      case 'circle_committee':
+        return [
+          ...baseNav,
+          { key: 'review', label: 'Applications to Review', icon: FileText },
+          { key: 'evaluated', label: 'Evaluated Applications', icon: CheckCircle2 }
+        ]
+      case 'corporation_committee':
+        return [
+          ...baseNav,
+          { key: 'evaluate', label: 'Applications to Evaluate', icon: FileText },
+          { key: 'forwarded', label: 'Forwarded Applications', icon: CheckCircle2 }
+        ]
+      case 'state_committee':
+        return [
+          ...baseNav,
+          { key: 'final-review', label: 'Final Review', icon: FileText },
+          { key: 'approved', label: 'Approved Applications', icon: CheckCircle2 }
+        ]
+      default:
+        return baseNav
+    }
+  }
+
+  // Get role-specific stats
+  const getRoleBasedStats = () => {
+    if (!adminData) return []
+    
+    const userType = adminData.userType || adminData.adminLevel
+    
+    switch (userType) {
+      case 'admin':
+        return [
+          { label: 'Total Applications', value: '18', icon: FileText, color: 'teal' },
+          { label: 'Pending Review', value: '6', icon: Clock, color: 'yellow' },
+          { label: 'Under Review', value: '8', icon: Eye, color: 'blue' },
+          { label: 'Completed', value: '4', icon: CheckCircle2, color: 'green' }
+        ]
+      case 'nominee':
+        return [
+          { label: 'My Applications', value: '2', icon: FileText, color: 'teal' },
+          { label: 'Under Review', value: '1', icon: Clock, color: 'yellow' },
+          { label: 'Approved', value: '1', icon: CheckCircle2, color: 'green' },
+          { label: 'Pending', value: '0', icon: Eye, color: 'blue' }
+        ]
+      case 'circle_committee':
+        return [
+          { label: 'To Review', value: '5', icon: FileText, color: 'teal' },
+          { label: 'Reviewed Today', value: '3', icon: CheckCircle2, color: 'green' },
+          { label: 'Pending Action', value: '2', icon: Clock, color: 'yellow' },
+          { label: 'Total Reviewed', value: '15', icon: Eye, color: 'blue' }
+        ]
+      case 'corporation_committee':
+        return [
+          { label: 'To Evaluate', value: '4', icon: FileText, color: 'teal' },
+          { label: 'Evaluated', value: '8', icon: CheckCircle2, color: 'green' },
+          { label: 'Pending', value: '2', icon: Clock, color: 'yellow' },
+          { label: 'Forwarded', value: '6', icon: Eye, color: 'blue' }
+        ]
+      case 'state_committee':
+        return [
+          { label: 'Final Review', value: '3', icon: FileText, color: 'teal' },
+          { label: 'Approved', value: '12', icon: CheckCircle2, color: 'green' },
+          { label: 'Pending Decision', value: '1', icon: Clock, color: 'yellow' },
+          { label: 'Total Processed', value: '16', icon: Eye, color: 'blue' }
+        ]
+      default:
+        return []
+    }
+  }
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken')
@@ -159,8 +276,8 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center space-x-2 text-gray-700 flex-shrink-0">
               <div className="text-right hidden md:block">
-                <p className="text-sm font-medium text-gray-900">Corporation Admin</p>
-                <p className="text-sm text-gray-600">Krishna Corporation</p>
+                <p className="text-sm font-medium text-gray-900">{adminData.name}</p>
+                <p className="text-sm text-gray-600 capitalize">{adminData.userType || adminData.adminLevel}</p>
               </div>
               <select className="px-2 py-1 text-xs border border-gray-300 rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 transition-colors">
                 <option>EN</option>
@@ -196,7 +313,7 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">{adminData.name}</h3>
-                  <p className="text-sm text-gray-600 capitalize">{adminData.adminLevel}</p>
+                  <p className="text-sm text-gray-600 capitalize">{adminData.userType || adminData.adminLevel}</p>
                 </div>
               </div>
 
@@ -204,38 +321,30 @@ export default function AdminDashboard() {
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
                   MAIN DASHBOARD
                 </div>
-                <button
-                  onClick={() => {
-                    setActiveSection('dashboard')
-                    setIsMobileMenuOpen(false)
-                  }}
-                  className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                    activeSection === 'dashboard' 
-                      ? 'bg-teal-100 text-teal-700 border border-teal-200' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <BarChart3 className="w-5 h-5" />
-                  <span>Dashboard Overview</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setActiveSection('applications')
-                    setIsMobileMenuOpen(false)
-                  }}
-                  className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
-                    activeSection === 'applications' 
-                      ? 'bg-teal-100 text-teal-700 border border-teal-200' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <FileText className="w-5 h-5" />
-                  <span>Applications</span>
-                </button>
+                {getRoleBasedNavigation().map((item) => (
+                  <button
+                    key={item.key}
+                    onClick={() => {
+                      if (item.key === 'submit') {
+                        router.push('/admin/submit-application')
+                      } else {
+                        setActiveSection(item.key)
+                      }
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors ${
+                      activeSection === item.key 
+                        ? 'bg-teal-100 text-teal-700 border border-teal-200' 
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span>{item.label}</span>
+                  </button>
+                ))}
 
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3 mt-6">
                   REPORTS & ANALYTICS
-                  <hr></hr>
                 </div>
                 <button
                   onClick={() => {
@@ -247,16 +356,6 @@ export default function AdminDashboard() {
                   <FileText className="w-5 h-5" />
                   <span>Reports</span>
                 </button>
-                <button
-                  onClick={() => {
-                    toast('Analytics functionality will be implemented here', { icon: 'ℹ️' })
-                    setIsMobileMenuOpen(false)
-                  }}
-                  className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                >
-                  <BarChart3 className="w-5 h-5" />
-                  <span>Analytics</span>
-                </button>
               </nav>
             </div>
           </aside>
@@ -266,7 +365,7 @@ export default function AdminDashboard() {
             {activeSection === 'dashboard' ? (
               <>
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">{getRoleBasedWelcome()}</h2>
                   <div className="flex items-center space-x-2">
                     <button className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
                       Export Data
@@ -278,62 +377,89 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Stats Cards */}
+                {/* Role-based Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                  <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-600">Total Applications</p>
-                        <p className="text-2xl font-bold text-gray-900">18</p>
-                      </div>
-                      <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center border border-teal-200">
-                        <FileText className="w-6 h-6 text-teal-600" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-600">Pending Review</p>
-                        <p className="text-2xl font-bold text-gray-900">6</p>
-                      </div>
-                      <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center border border-yellow-200">
-                        <Clock className="w-6 h-6 text-yellow-600" />
+                  {getRoleBasedStats().map((stat, index) => (
+                    <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-gray-600">{stat.label}</p>
+                          <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                        </div>
+                        <div className={`w-12 h-12 bg-${stat.color}-100 rounded-lg flex items-center justify-center border border-${stat.color}-200`}>
+                          <stat.icon className={`w-6 h-6 text-${stat.color}-600`} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-600">Under Review</p>
-                        <p className="text-2xl font-bold text-gray-900">8</p>
-                      </div>
-                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center border border-blue-200">
-                        <Eye className="w-6 h-6 text-blue-600" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm text-gray-600">Completed</p>
-                        <p className="text-2xl font-bold text-gray-900">4</p>
-                      </div>
-                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center border border-green-200">
-                        <CheckCircle2 className="w-6 h-6 text-green-600" />
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
+
+                {/* Role-specific content */}
+                {adminData && adminData.userType === 'nominee' && (
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions for Nominees</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <button 
+                        onClick={() => router.push('/admin/submit-application')}
+                        className="p-4 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors"
+                      >
+                        <FileText className="w-8 h-8 text-teal-600 mb-2" />
+                        <p className="font-medium text-gray-900">Submit New Application</p>
+                        <p className="text-sm text-gray-600">Create a new WUA application</p>
+                      </button>
+                      <button 
+                        onClick={() => toast('View application status functionality will be implemented', { icon: 'ℹ️' })}
+                        className="p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                      >
+                        <Eye className="w-8 h-8 text-blue-600 mb-2" />
+                        <p className="font-medium text-gray-900">View Application Status</p>
+                        <p className="text-sm text-gray-600">Track your submitted applications</p>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {adminData && (adminData.userType === 'circle_committee' || adminData.userType === 'corporation_committee' || adminData.userType === 'state_committee') && (
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Committee Actions</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <button 
+                        onClick={() => toast('Review applications functionality will be implemented', { icon: 'ℹ️' })}
+                        className="p-4 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-colors"
+                      >
+                        <FileText className="w-8 h-8 text-orange-600 mb-2" />
+                        <p className="font-medium text-gray-900">Review Applications</p>
+                        <p className="text-sm text-gray-600">Applications awaiting review</p>
+                      </button>
+                      <button 
+                        onClick={() => toast('Evaluated applications functionality will be implemented', { icon: 'ℹ️' })}
+                        className="p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+                      >
+                        <CheckCircle2 className="w-8 h-8 text-green-600 mb-2" />
+                        <p className="font-medium text-gray-900">Completed Reviews</p>
+                        <p className="text-sm text-gray-600">Applications you've reviewed</p>
+                      </button>
+                      <button 
+                        onClick={() => toast('Generate reports functionality will be implemented', { icon: 'ℹ️' })}
+                        className="p-4 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors"
+                      >
+                        <BarChart3 className="w-8 h-8 text-purple-600 mb-2" />
+                        <p className="font-medium text-gray-900">Committee Reports</p>
+                        <p className="text-sm text-gray-600">Generate review reports</p>
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Applications Management Preview */}
                   <div className="lg:col-span-2 bg-white border border-gray-200 rounded-lg shadow-lg">
                     <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                      <h3 className="text-lg font-semibold text-gray-900">Applications Management</h3>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {adminData?.userType === 'nominee' ? 'My Applications' : 
+                         adminData?.userType === 'admin' ? 'All Applications' : 
+                         'Applications for Review'}
+                      </h3>
                       <button className="px-4 py-2 text-sm bg-teal-500 text-white rounded-md hover:bg-teal-600 transition-colors shadow-lg">
                         Refresh
                       </button>
@@ -346,7 +472,7 @@ export default function AdminDashboard() {
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">WUA Name</th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">District</th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Submission Date</th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
