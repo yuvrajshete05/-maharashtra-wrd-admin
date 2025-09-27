@@ -7,7 +7,7 @@
     "dev:nodemon": "nodemon --exec \"next dev -p 3005\" --watch src --ext tsx,ts,js,jsx",
     "dev:auto": "next dev",
     "build": "next build",
-    "start": "next start -p 3005",
+    "start": "next start -p ${PORT:-3005}",
     "lint": "next lint",
     "create-test-users": "node scripts/create-test-data.mjs",
     "seed-db": "node scripts/seed-database.js",

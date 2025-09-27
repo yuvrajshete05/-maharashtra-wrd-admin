@@ -3,7 +3,24 @@ import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
-import { ArrowLeft, Send } from 'lucide-react'
+import { ArrowLeft, Send, LogOut } from 'lucide-react'
+
+// Browser-Only Session Manager
+class BrowserSessionManager {
+  static forceLogoutAdmin(): boolean {
+    localStorage.removeItem('admin_active_session');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminData');
+    return true;
+  }
+
+  static forceLogoutNominee(): boolean {
+    localStorage.removeItem('nominee_active_session');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminData');
+    return true;
+  }
+}
 
 // Simplified form interface for testing
 interface SimpleFormData {
@@ -51,6 +68,30 @@ export default function SubmitApplication() {
       router.push('/admin/login')
     }
   }, [router])
+
+  // Logout handler
+  const handleLogout = () => {
+    const userData = localStorage.getItem('adminData');
+    if (userData) {
+      try {
+        const parsedData = JSON.parse(userData);
+        if (parsedData.userType === 'nominee') {
+          BrowserSessionManager.forceLogoutNominee();
+          toast.success('Logged out successfully');
+          router.push('/welcome');
+        } else {
+          BrowserSessionManager.forceLogoutAdmin();
+          toast.success('Logged out successfully');
+          router.push('/admin/login');
+        }
+      } catch (error) {
+        // Fallback logout
+        BrowserSessionManager.forceLogoutAdmin();
+        toast.success('Logged out successfully');
+        router.push('/admin/login');
+      }
+    }
+  };
 
   // Form submission handler
   const onSubmit = async (data: SimpleFormData) => {
@@ -169,9 +210,19 @@ export default function SubmitApplication() {
               </button>
             </div>
 
-            <div className="text-right">
-              <h1 className="text-lg font-semibold text-white">Submit New Application</h1>
-              <p className="text-sm text-white/70">Punyashlok Ahilyabai Holkar Award</p>
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <h1 className="text-lg font-semibold text-white">Submit New Application</h1>
+                <p className="text-sm text-white/70">Punyashlok Ahilyabai Holkar Award</p>
+              </div>
+              
+              <button
+                onClick={handleLogout}
+                className="flex items-center px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-white rounded-lg transition-colors border border-red-500/30"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </button>
             </div>
           </div>
         </div>
