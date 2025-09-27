@@ -1,9 +1,95 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { Eye, EyeOff, User, Lock, LogIn } from 'lucide-react'
 import toast from 'react-hot-toast'
+
+// Simple Browser-Only Session Manager (No Global Control)
+class BrowserSessionManager {
+  private readonly NOMINEE_SESSION_KEY = 'nominee_active_session';
+  private readonly ADMIN_SESSION_KEY = 'admin_active_session';
+  private readonly SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  generateSessionId(): string {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  isSessionExpired(sessionData: any): boolean {
+    if (!sessionData || !sessionData.timestamp) return true;
+    const now = new Date().getTime();
+    return (now - sessionData.timestamp) > this.SESSION_TIMEOUT;
+  }
+
+  canAdminLogin(): { canLogin: boolean; activeSession: any } {
+    const existingSession = localStorage.getItem(this.ADMIN_SESSION_KEY);
+    
+    if (!existingSession) return { canLogin: true, activeSession: null };
+    
+    try {
+      const sessionData = JSON.parse(existingSession);
+      
+      if (this.isSessionExpired(sessionData)) {
+        this.clearAdminSession();
+        return { canLogin: true, activeSession: null };
+      }
+      
+      return { canLogin: false, activeSession: sessionData };
+    } catch (error) {
+      this.clearAdminSession();
+      return { canLogin: true, activeSession: null };
+    }
+  }
+
+  createAdminSession(userData: any): string {
+    const sessionId = this.generateSessionId();
+    const sessionData = {
+      sessionId,
+      userId: userData.username,
+      userType: userData.userType,
+      name: userData.name,
+      adminLevel: userData.adminLevel,
+      timestamp: new Date().getTime(),
+      loginTime: new Date().toISOString()
+    };
+
+    localStorage.setItem(this.ADMIN_SESSION_KEY, JSON.stringify(sessionData));
+    localStorage.setItem('adminToken', userData.token);
+    localStorage.setItem('adminData', JSON.stringify({
+      username: userData.username,
+      name: userData.name,
+      userType: userData.userType,
+      adminLevel: userData.adminLevel,
+      loginTime: sessionData.loginTime,
+      sessionId: sessionId
+    }));
+
+    return sessionId;
+  }
+
+  clearAdminSession(): void {
+    localStorage.removeItem(this.ADMIN_SESSION_KEY);
+    
+    const adminData = localStorage.getItem('adminData');
+    if (adminData) {
+      try {
+        const data = JSON.parse(adminData);
+        if (data.userType !== 'nominee') {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminData');
+        }
+      } catch (error) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminData');
+      }
+    }
+  }
+
+  forceLogoutAdmin(): boolean {
+    this.clearAdminSession();
+    return true;
+  }
+}
 
 interface LoginFormData {
   email: string
@@ -14,6 +100,7 @@ export default function AdminLogin() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [sessionManager] = useState(() => new BrowserSessionManager())
   
   const {
     register,
@@ -22,10 +109,52 @@ export default function AdminLogin() {
     watch
   } = useForm<LoginFormData>()
 
+  // Check existing session on component mount
+  useEffect(() => {
+    const adminData = localStorage.getItem('adminData');
+    if (adminData) {
+      try {
+        const data = JSON.parse(adminData);
+        if (data.userType !== 'nominee') {
+          // Already logged in as admin, redirect to dashboard
+          router.push('/admin/dashboard');
+        }
+      } catch (error) {
+        // Invalid data, clear it
+        localStorage.clear();
+      }
+    }
+  }, [router]);
+
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     
     try {
+      // Check if admin can login (browser-only session control)
+      const sessionCheck = sessionManager.canAdminLogin();
+      
+      if (!sessionCheck.canLogin) {
+        const activeSession = sessionCheck.activeSession;
+        const shouldForceLogin = confirm(
+          `🖥️ BROWSER SESSION CONFLICT\n\n` +
+          `Another admin/committee member (${activeSession.name || activeSession.userId}) is already logged in this browser.\n\n` +
+          `User Type: ${activeSession.userType}\n` +
+          `Login Time: ${new Date(activeSession.timestamp).toLocaleString()}\n\n` +
+          `💡 Note: Different computers/browsers can have separate sessions.\n\n` +
+          `Do you want to force logout the existing session in this browser?`
+        );
+        
+        if (!shouldForceLogin) {
+          toast.error('Login cancelled. Only one admin per browser allowed.');
+          setIsLoading(false);
+          return;
+        }
+        
+        // Force logout existing session
+        sessionManager.forceLogoutAdmin();
+        toast.success('Previous admin session logged out from this browser.');
+      }
+
       // Call our real login API
       const response = await fetch('/api/auth/login', {
         method: 'POST',
@@ -41,17 +170,25 @@ export default function AdminLogin() {
       const result = await response.json()
 
       if (result.success) {
+        // Check if user is NOT a nominee (committee members only)
+        if (result.data.user.userType === 'nominee') {
+          toast.error('Nominees should use the nominee login. Committee members only here.')
+          setIsLoading(false)
+          return
+        }
+
         toast.success(`Login successful! Welcome ${result.data.user.name}`)
         
-        // Store user data in localStorage
-        localStorage.setItem('adminToken', result.data.token)
-        localStorage.setItem('adminData', JSON.stringify({
+        // Create browser session (no global control)
+        const sessionId = sessionManager.createAdminSession({
           username: result.data.user.email,
-          adminLevel: result.data.user.userType,
-          userType: result.data.user.userType,
           name: result.data.user.name,
-          loginTime: new Date().toISOString()
-        }))
+          userType: result.data.user.userType,
+          adminLevel: result.data.user.userType,
+          token: result.data.token
+        });
+
+        console.log(`✅ Browser admin session created: ${sessionId} (${result.data.user.userType})`);
         
         // Redirect to dashboard
         setTimeout(() => {
@@ -71,8 +208,8 @@ export default function AdminLogin() {
   return (
     <>
       <Head>
-        <title>Admin Login - Maharashtra Water Resources Department</title>
-        <meta name="description" content="Admin login portal for Maharashtra Water Resources Department" />
+        <title>Committee Admin Login - Maharashtra Water Resources Department</title>
+        <meta name="description" content="Committee admin login portal for Maharashtra Water Resources Department" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -108,7 +245,8 @@ export default function AdminLogin() {
             {/* Logo Section */}
             <div className="text-center mb-6">
               <h2 className="text-xl font-bold text-gray-900 mb-2">Admin Login</h2>
-              <p className="text-gray-600 text-xs">Punyashlok Ahilyabai Holkar Award Management System</p>
+              <p className="text-gray-600 text-xs">For Committee Members Only</p>
+              <p className="text-gray-500 text-xs mt-1">Circle, Corporation, State Committee & Admin</p>
             </div>
 
             {/* Login Form */}
@@ -194,23 +332,25 @@ export default function AdminLogin() {
                 ) : (
                   <>
                     <LogIn className="w-5 h-5" />
-                    <span>Login</span>
+                    <span>Login as Admin</span>
                   </>
                 )}
               </button>
             </form>
 
-            {/* Back to Homepage Link */}
-            <div className="mt-4 text-center">
+            {/* Back to Homepage Link and Nominee Login Link */}
+            <div className="mt-4 text-center space-y-2">
+              <div className="text-sm text-gray-500">                
+              </div>
               <a
                 href="#"
-                className="text-sm text-teal-600 hover:text-teal-500 transition-colors"
+                className="text-sm text-teal-600 hover:text-teal-500 transition-colors block"
                 onClick={(e) => {
                   e.preventDefault()
-                  toast('Back to homepage functionality would be implemented here', { icon: 'ℹ️' })
+                  router.push('/')
                 }}
               >
-                Back To homepage
+                Back To Homepage
               </a>
             </div>
           </div>

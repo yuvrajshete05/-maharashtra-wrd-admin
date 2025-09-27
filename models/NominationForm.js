@@ -38,6 +38,20 @@ const NominationFormSchema = new mongoose.Schema({
     required: [true, 'Category is required']
   },
   
+  // Applicant Basic Information (from simple form)
+  applicantInfo: {
+    applicantName: {
+      type: String,
+      required: [true, 'Applicant name is required'],
+      trim: true
+    },
+    mobileNumber: {
+      type: String,
+      required: [true, 'Mobile number is required'],
+      match: [/^[6-9]\d{9}$/, 'Please enter a valid 10-digit mobile number']
+    }
+  },
+  
   // Self-Assessment Questionnaire Responses
   questionnaireResponses: [{
     questionId: {

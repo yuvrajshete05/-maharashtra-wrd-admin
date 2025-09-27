@@ -2,6 +2,7 @@
 import dbConnect from '../../../../lib/mongodb'
 import User from '../../../../models/User'
 import UserProfile from '../../../../models/UserProfile'
+import jwt from 'jsonwebtoken'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -77,10 +78,18 @@ export default async function handler(req, res) {
     const userProfile = new UserProfile(profilePayload)
     await userProfile.save()
 
+    // Generate JWT token for immediate login
+    const token = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+    )
+
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       data: {
+        token,
         user: user.toPublicJSON(),
         profile: userProfile
       }

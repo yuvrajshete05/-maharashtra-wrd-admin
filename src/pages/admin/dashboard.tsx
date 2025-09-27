@@ -75,9 +75,22 @@ export default function AdminDashboard() {
 
     try {
       const parsedData = JSON.parse(userData)
+      
+      // Route protection and session validation
+      console.log(`🔐 Dashboard access by: ${parsedData.userType || parsedData.adminLevel} (${parsedData.name})`);
+      
+      // Both nominees and admins can access dashboard, but with different permissions
+      if (parsedData.userType === 'nominee') {
+        console.log('✅ Nominee accessing dashboard with limited permissions');
+      } else {
+        console.log(`✅ ${parsedData.userType} accessing dashboard with full permissions`);
+      }
+      
       setAdminData(parsedData)
     } catch (error) {
-      toast.error('Invalid session data')
+      console.error('Error parsing admin data:', error);
+      toast.error('Invalid session data. Please login again.')
+      localStorage.clear()
       router.push('/admin/login')
     }
   }, [router])
@@ -199,10 +212,29 @@ export default function AdminDashboard() {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('adminToken')
-    localStorage.removeItem('adminData')
-    toast.success('Logged out successfully')
-    router.push('/admin/login')
+    if (adminData) {
+      // Clear appropriate sessions based on user type
+      if (adminData.userType === 'nominee') {
+        localStorage.removeItem('nominee_active_session');
+        console.log('🚪 Nominee session cleared');
+        toast.success('Logged out successfully');
+        router.push('/welcome');
+      } else {
+        localStorage.removeItem('admin_active_session');
+        console.log('🚪 Admin session cleared');
+        toast.success('Logged out successfully');
+        router.push('/admin/login');
+      }
+      
+      // Clear main session data
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminData');
+    } else {
+      // Fallback: clear everything
+      localStorage.clear();
+      toast.success('Logged out successfully');
+      router.push('/');
+    }
   }
 
   const handleViewApplication = (app: Application) => {

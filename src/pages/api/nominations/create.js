@@ -33,22 +33,24 @@ export default async function handler(req, res) {
       })
     }
 
-    const { wuaId, applicationYear, category, wuaName, wuaNameMarathi, district, taluka, village, contactInfo, wuaDetails, projectInfo, selfAssessment } = req.body
+    const { wuaId, applicationYear, category, wuaName, wuaNameMarathi, district, taluka, village, contactInfo, wuaDetails, projectInfo, selfAssessment, applicantName, mobileNumber } = req.body
 
     console.log('📝 Form submission data:', {
       wuaId,
       applicationYear,
       category,
       wuaName,
+      applicantName,
+      mobileNumber,
       hasContactInfo: !!contactInfo,
       hasWuaDetails: !!wuaDetails
     })
 
     // Validation
-    if (!applicationYear || !category) {
-      console.log('❌ Missing required fields:', { applicationYear, category })
+    if (!applicationYear || !category || !applicantName || !mobileNumber) {
+      console.log('❌ Missing required fields:', { applicationYear, category, applicantName, mobileNumber })
       return res.status(400).json({ 
-        message: 'Application year and category are required' 
+        message: 'Application year, category, applicant name, and mobile number are required' 
       })
     }
 
@@ -142,6 +144,10 @@ export default async function handler(req, res) {
       wuaId: wuaObjectId,
       applicationYear,
       category,
+      applicantInfo: {
+        applicantName: applicantName,
+        mobileNumber: mobileNumber
+      },
       questionnaireResponses: [],
       status: 'draft',
       currentStage: 'self_assessment'

@@ -1,13 +1,181 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import { useForm } from 'react-hook-form'
 import { Eye, EyeOff, User, Lock, LogIn, Mail, Phone } from 'lucide-react'
 import toast from 'react-hot-toast'
 
+// Simple Browser-Only Session Manager (No Global Control)
+class BrowserSessionManager {
+  private readonly NOMINEE_SESSION_KEY = 'nominee_active_session';
+  private readonly ADMIN_SESSION_KEY = 'admin_active_session';
+  private readonly SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  generateSessionId(): string {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  isSessionExpired(sessionData: any): boolean {
+    if (!sessionData || !sessionData.timestamp) return true;
+    const now = new Date().getTime();
+    return (now - sessionData.timestamp) > this.SESSION_TIMEOUT;
+  }
+
+  canNomineeLogin(): { canLogin: boolean; activeSession: any } {
+    const existingSession = localStorage.getItem(this.NOMINEE_SESSION_KEY);
+    
+    if (!existingSession) return { canLogin: true, activeSession: null };
+    
+    try {
+      const sessionData = JSON.parse(existingSession);
+      
+      if (this.isSessionExpired(sessionData)) {
+        this.clearNomineeSession();
+        return { canLogin: true, activeSession: null };
+      }
+      
+      return { canLogin: false, activeSession: sessionData };
+    } catch (error) {
+      this.clearNomineeSession();
+      return { canLogin: true, activeSession: null };
+    }
+  }
+
+  createNomineeSession(userData: any): string {
+    const sessionId = this.generateSessionId();
+    const sessionData = {
+      sessionId,
+      userId: userData.username,
+      userType: 'nominee',
+      name: userData.name,
+      timestamp: new Date().getTime(),
+      loginTime: new Date().toISOString()
+    };
+
+    localStorage.setItem(this.NOMINEE_SESSION_KEY, JSON.stringify(sessionData));
+    localStorage.setItem('adminToken', userData.token);
+    localStorage.setItem('adminData', JSON.stringify({
+      username: userData.username,
+      name: userData.name,
+      userType: 'nominee',
+      adminLevel: 'nominee',
+      loginTime: sessionData.loginTime,
+      sessionId: sessionId
+    }));
+
+    return sessionId;
+  }
+
+  clearNomineeSession(): void {
+    localStorage.removeItem(this.NOMINEE_SESSION_KEY);
+    
+    const adminData = localStorage.getItem('adminData');
+    if (adminData) {
+      try {
+        const data = JSON.parse(adminData);
+        if (data.userType === 'nominee') {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminData');
+        }
+      } catch (error) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminData');
+      }
+    }
+  }
+
+  forceLogoutNominee(): boolean {
+    this.clearNomineeSession();
+    return true;
+  }
+}
+
+// SessionManager class for handling single session control
+class SessionManager {
+  private readonly NOMINEE_SESSION_KEY = 'nominee_active_session';
+  private readonly ADMIN_SESSION_KEY = 'admin_active_session';
+  private readonly SESSION_TIMEOUT = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  generateSessionId(): string {
+    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  isSessionExpired(sessionData: any): boolean {
+    if (!sessionData || !sessionData.timestamp) return true;
+    const now = new Date().getTime();
+    return (now - sessionData.timestamp) > this.SESSION_TIMEOUT;
+  }
+
+  canNomineeLogin(): { canLogin: boolean; activeSession: any } {
+    const existingSession = localStorage.getItem(this.NOMINEE_SESSION_KEY);
+    
+    if (!existingSession) return { canLogin: true, activeSession: null };
+    
+    try {
+      const sessionData = JSON.parse(existingSession);
+      
+      if (this.isSessionExpired(sessionData)) {
+        this.clearNomineeSession();
+        return { canLogin: true, activeSession: null };
+      }
+      
+      return { canLogin: false, activeSession: sessionData };
+    } catch (error) {
+      this.clearNomineeSession();
+      return { canLogin: true, activeSession: null };
+    }
+  }
+
+  createNomineeSession(userData: any): string {
+    const sessionId = this.generateSessionId();
+    const sessionData = {
+      sessionId,
+      userId: userData.username,
+      userType: 'nominee',
+      name: userData.name,
+      timestamp: new Date().getTime(),
+      loginTime: new Date().toISOString()
+    };
+
+    localStorage.setItem(this.NOMINEE_SESSION_KEY, JSON.stringify(sessionData));
+    localStorage.setItem('adminToken', userData.token);
+    localStorage.setItem('adminData', JSON.stringify({
+      username: userData.username,
+      name: userData.name,
+      userType: 'nominee',
+      adminLevel: 'nominee',
+      loginTime: sessionData.loginTime,
+      sessionId: sessionId
+    }));
+
+    return sessionId;
+  }
+
+  clearNomineeSession(): void {
+    localStorage.removeItem(this.NOMINEE_SESSION_KEY);
+    
+    const adminData = localStorage.getItem('adminData');
+    if (adminData) {
+      try {
+        const data = JSON.parse(adminData);
+        if (data.userType === 'nominee') {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminData');
+        }
+      } catch (error) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminData');
+      }
+    }
+  }
+
+  forceLogoutNominee(): boolean {
+    this.clearNomineeSession();
+    return true;
+  }
+}
+
 interface LoginFormData {
-  name: string
-  mobile: string
   email: string
   password: string
 }
@@ -16,6 +184,7 @@ export default function Login() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [sessionManager] = useState(() => new BrowserSessionManager())
   
   const {
     register,
@@ -24,33 +193,120 @@ export default function Login() {
     watch
   } = useForm<LoginFormData>()
 
+  // Check existing session on component mount
+  useEffect(() => {
+    const adminData = localStorage.getItem('adminData');
+    if (adminData) {
+      try {
+        const data = JSON.parse(adminData);
+        if (data.userType === 'nominee') {
+          // Already logged in as nominee, redirect to dashboard
+          router.push('/admin/dashboard');
+        }
+      } catch (error) {
+        // Invalid data, clear it
+        localStorage.clear();
+      }
+    }
+  }, [router]);
+
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     
     try {
-      // Mock authentication - simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      // Check if nominee can login (browser-only session control)
+      const sessionCheck = sessionManager.canNomineeLogin();
       
-      // Allow any user to login (removed specific credential check)
-      if (data.name && data.mobile && data.email && data.password) {
-        toast.success(`Login successful! Welcome ${data.name}`)
-        // Store user data in localStorage
-        localStorage.setItem('loginToken', 'mock_jwt_token')
-        localStorage.setItem('loginData', JSON.stringify({
-          name: data.name,
-          mobile: data.mobile,
-          email: data.email,
-          loginTime: new Date().toISOString()
-        }))
+      if (!sessionCheck.canLogin) {
+        const activeSession = sessionCheck.activeSession;
+        const shouldForceLogin = confirm(
+          `🖥️ BROWSER SESSION CONFLICT\n\n` +
+          `Another nominee (${activeSession.name || activeSession.userId}) is already logged in this browser.\n\n` +
+          `Login Time: ${new Date(activeSession.timestamp).toLocaleString()}\n\n` +
+          `💡 Note: Different computers/browsers can have separate sessions.\n\n` +
+          `Do you want to force logout the existing session in this browser?`
+        );
         
-        // Redirect to dashboard
-        setTimeout(() => {
-          router.push('/admin/dashboard')
-        }, 1000)
-      } else {
-        toast.error('Please fill all required fields.')
+        if (!shouldForceLogin) {
+          toast.error('Login cancelled. Only one nominee per browser allowed.');
+          setIsLoading(false);
+          return;
+        }
+        
+        // Force logout existing session
+        sessionManager.forceLogoutNominee();
+        toast.success('Previous nominee session logged out from this browser.');
       }
+      // First try to login with existing credentials
+      let response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      })
+
+      let result = await response.json()
+
+      // If login fails, try to register as a new nominee
+      if (!result.success) {
+        console.log('Login failed, attempting to register as new nominee...')
+        
+        response = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: data.email,
+            password: data.password,
+            username: data.email.split('@')[0], // Use email prefix as username
+            fullName: `User ${data.email.split('@')[0]}`, // Generate a default name
+            userType: 'nominee',
+            mobile: ''
+          }),
+        })
+
+        result = await response.json()
+
+        if (result.success) {
+          toast.success(`Welcome! New nominee account created for ${data.email}`)
+        } else {
+          toast.error(result.message || 'Registration failed. Please try again.')
+          setIsLoading(false)
+          return
+        }
+      } else {
+        // Check if existing user is appropriate for nominee login
+        if (result.data.user.userType !== 'nominee') {
+          toast.error('This login is for nominees only. Committee members please use admin login.')
+          setIsLoading(false)
+          return
+        }
+        
+        toast.success(`Welcome back! ${result.data.user.fullName || result.data.user.email}`)
+      }
+
+      // Create simple browser session (no global control)
+      const sessionId = sessionManager.createNomineeSession({
+        username: result.data.user.email,
+        name: result.data.user.fullName || result.data.user.email,
+        token: result.data.token
+      });
+
+      toast.success(`✅ Welcome! Browser session created for this device.`);
+      console.log(`✅ Browser nominee session created: ${sessionId}`);
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        router.push('/admin/dashboard')
+      }, 1000);
+
     } catch (error) {
+      console.error('Login/Registration error:', error)
       toast.error('Login failed. Please try again.')
     } finally {
       setIsLoading(false)
@@ -64,8 +320,8 @@ export default function Login() {
   return (
     <>
       <Head>
-        <title>Login - Maharashtra Water Resources Department</title>
-        <meta name="description" content="Login portal for Maharashtra Water Resources Department" />
+        <title>Nominee Login - Maharashtra Water Resources Department</title>
+        <meta name="description" content="Nominee login portal for Maharashtra Water Resources Department" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -100,87 +356,13 @@ export default function Login() {
             <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
             {/* Logo Section */}
             <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Login</h2>
-              <p className="text-gray-600 text-xs">Punyashlok Ahilyabai Holkar Award Management System</p>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Nominee Login</h2>
+              <p className="text-gray-600 text-xs">For Water User Association (WUA) Nominees</p>
+              <p className="text-gray-500 text-xs mt-1">New user? Just enter email & password to register!</p>
             </div>
 
             {/* Login Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Name */}
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="text"
-                    {...register('name', {
-                      required: 'Full name is required',
-                      minLength: { value: 2, message: 'Name must be at least 2 characters' }
-                    })}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                    disabled={isLoading}
-                    style={{ backgroundColor: '#F0F0F0' }}
-                  />
-                </div>
-                {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
-                )}
-              </div>
-
-              {/* Gender */}
-              {/* <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
-                  Gender
-                </label>
-                <select
-                  {...register('gender', { required: 'Please select gender' })}
-                  className="government-input"
-                  disabled={isLoading}
-                >
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
-                {errors.gender && (
-                  <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>
-                )}
-              </div> */}
-
-              {/* Mobile Number */}
-              <div>
-                <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-2">
-                  Mobile Number
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Phone className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="tel"
-                    {...register('mobile', {
-                      required: 'Mobile number is required',
-                      pattern: {
-                        value: /^[0-9]{10}$/,
-                        message: 'Please enter a valid 10-digit mobile number'
-                      }
-                    })}
-                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                    placeholder="Enter 10-digit mobile number"
-                    maxLength={10}
-                    disabled={isLoading}
-                    style={{ backgroundColor: '#F0F0F0' }}
-                  />
-                </div>
-                {errors.mobile && (
-                  <p className="mt-1 text-sm text-red-600">{errors.mobile.message}</p>
-                )}
-              </div>
 
               {/* Email */}
               <div>
@@ -269,11 +451,11 @@ export default function Login() {
               </button>
             </form>
 
-            {/* Back to Homepage Link */}
-            <div className="mt-4 text-center">
+            {/* Back to Homepage Link and Admin Login Link */}
+            <div className="mt-4 text-center space-y-2">
               <button
                 onClick={handleBackToHomepage}
-                className="text-sm text-teal-600 hover:text-teal-500 transition-colors underline"
+                className="text-sm text-teal-600 hover:text-teal-500 transition-colors underline block"
                 disabled={isLoading}
               >
                 Back To Homepage

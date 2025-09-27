@@ -1,0 +1,24 @@
+{
+  "watch": [
+    "src/**/*",
+    "models/**/*",
+    "lib/**/*",
+    "scripts/**/*",
+    ".env.local"
+  ],
+  "ext": "ts,tsx,js,jsx,json,mjs",
+  "ignore": [
+    "node_modules",
+    ".next",
+    "dist",
+    "build",
+    "*.log"
+  ],
+  "exec": "next dev -p 3005",
+  "env": {
+    "NODE_ENV": "development",
+    "PORT": "3005"
+  },
+  "delay": 1000,
+  "verbose": true
+}
