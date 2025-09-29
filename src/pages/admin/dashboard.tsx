@@ -9,12 +9,21 @@ import {
   Users, 
   RefreshCw, 
   Download,
+  Database,
   LogOut,
   Bell,
   Search,
   Filter,
   ChevronDown,
-  Eye
+  Eye,
+  FormInput,
+  Building2,
+  Award,
+  Crown,
+  Star,
+  Trophy,
+  Send,
+  ArrowRight
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -132,6 +141,7 @@ export default function AdminDashboard() {
         return [
           ...baseNav,
           { key: 'applications', label: 'All Applications', icon: FileText },
+          { key: 'forms', label: 'WUA Forms System', icon: FormInput },
           { key: 'users', label: 'User Management', icon: Users },
           { key: 'reports', label: 'System Reports', icon: BarChart3 }
         ]
@@ -139,28 +149,32 @@ export default function AdminDashboard() {
         return [
           ...baseNav,
           { key: 'my-applications', label: 'My Applications', icon: FileText },
+          { key: 'forms', label: 'Available Forms', icon: FormInput },
           { key: 'submit', label: 'Submit New Application', icon: FileText }
         ]
       case 'circle_committee':
         return [
           ...baseNav,
           { key: 'review', label: 'Applications to Review', icon: FileText },
+          { key: 'forms', label: 'Evaluation Forms', icon: FormInput },
           { key: 'evaluated', label: 'Evaluated Applications', icon: CheckCircle2 }
         ]
       case 'corporation_committee':
         return [
           ...baseNav,
           { key: 'evaluate', label: 'Applications to Evaluate', icon: FileText },
+          { key: 'forms', label: 'Assessment Forms', icon: FormInput },
           { key: 'forwarded', label: 'Forwarded Applications', icon: CheckCircle2 }
         ]
       case 'state_committee':
         return [
           ...baseNav,
           { key: 'final-review', label: 'Final Review', icon: FileText },
+          { key: 'forms', label: 'Award Decision Forms', icon: FormInput },
           { key: 'approved', label: 'Approved Applications', icon: CheckCircle2 }
         ]
       default:
-        return baseNav
+        return [...baseNav, { key: 'forms', label: 'Forms System', icon: FormInput }]
     }
   }
 
@@ -545,6 +559,357 @@ export default function AdminDashboard() {
                         </div>
                       ))}
                     </div>
+                  </div>
+                </div>
+              </>
+            ) : activeSection === 'forms' ? (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900">WUA Competition Forms System</h2>
+                  <div className="flex items-center space-x-2">
+                    <button className="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                      System Guide
+                    </button>
+                    <button className="px-4 py-2 text-sm bg-teal-500 text-white rounded-md hover:bg-teal-600 transition-colors flex items-center space-x-2 shadow-lg">
+                      <RefreshCw className="w-4 h-4" />
+                      <span>Refresh</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Forms System Overview */}
+                <div className="bg-gradient-to-br from-orange-50 to-yellow-50 border-2 border-orange-200 rounded-lg p-6 mb-8">
+                  <div className="flex items-center mb-4">
+                    <Trophy className="w-8 h-8 text-orange-600 mr-3" />
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900">Punyashlok Ahilyabai Holkar Award System</h3>
+                      <p className="text-gray-600">Complete Water User Association Competition Management</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+                    <div className="text-center p-4 bg-white/70 rounded-lg">
+                      <div className="text-2xl font-bold text-orange-600">380</div>
+                      <div className="text-sm text-gray-600">Total Journey Points</div>
+                    </div>
+                    <div className="text-center p-4 bg-white/70 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">5</div>
+                      <div className="text-sm text-gray-600">Evaluation Stages</div>
+                    </div>
+                    <div className="text-center p-4 bg-white/70 rounded-lg">
+                      <div className="text-2xl font-bold text-green-600">5</div>
+                      <div className="text-sm text-gray-600">Award Categories</div>
+                    </div>
+                    <div className="text-center p-4 bg-white/70 rounded-lg">
+                      <div className="text-2xl font-bold text-purple-600">3</div>
+                      <div className="text-sm text-gray-600">Committee Levels</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Application Journey Workflow */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6 mb-8 shadow-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Complete Application Journey</h3>
+                  
+                  <div className="relative">
+                    {/* Journey Line */}
+                    <div className="absolute top-12 left-12 right-12 h-1 bg-gradient-to-r from-blue-200 via-green-200 via-purple-200 via-orange-200 to-yellow-200 rounded-full"></div>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 relative">
+                      {[
+                        { 
+                          stage: 1, 
+                          title: 'WUA Nomination', 
+                          description: 'Initial application submission with comprehensive details', 
+                          maxPoints: 'Eligibility',
+                          icon: FormInput,
+                          color: 'blue',
+                          route: '/admin/nomination-form'
+                        },
+                        { 
+                          stage: 2, 
+                          title: 'Self-Assessment', 
+                          description: '5-module questionnaire for self-evaluation', 
+                          maxPoints: '150 pts',
+                          icon: Users,
+                          color: 'green',
+                          route: '/admin/self-assessment'
+                        },
+                        { 
+                          stage: 3, 
+                          title: 'Circle Committee', 
+                          description: 'Document verification & site visit evaluation', 
+                          maxPoints: '100 pts',
+                          icon: Building2,
+                          color: 'purple',
+                          route: '/admin/circle-evaluation'
+                        },
+                        { 
+                          stage: 4, 
+                          title: 'Corporation Committee', 
+                          description: '5-module assessment for second-level review', 
+                          maxPoints: '30 pts',
+                          icon: Award,
+                          color: 'orange',
+                          route: '/admin/corporation-evaluation'
+                        },
+                        { 
+                          stage: 5, 
+                          title: 'State Committee', 
+                          description: 'Final evaluation & award decision', 
+                          maxPoints: '100 pts',
+                          icon: Crown,
+                          color: 'yellow',
+                          route: '/admin/state-committee'
+                        }
+                      ].map((stage, index) => {
+                        const StageIcon = stage.icon
+                        return (
+                          <div key={stage.stage} className="text-center relative">
+                            {/* Stage Number Circle */}
+                            <div className={`w-24 h-24 bg-${stage.color}-100 border-4 border-${stage.color}-300 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10`}>
+                              <div className={`w-16 h-16 bg-${stage.color}-500 rounded-full flex items-center justify-center`}>
+                                <StageIcon className="w-8 h-8 text-white" />
+                              </div>
+                            </div>
+                            
+                            {/* Stage Content */}
+                            <div className="space-y-2">
+                              <h4 className="font-bold text-gray-900">{stage.title}</h4>
+                              <p className="text-sm text-gray-600 px-2">{stage.description}</p>
+                              <div className={`text-xs font-semibold text-${stage.color}-700 bg-${stage.color}-100 px-2 py-1 rounded-full inline-block`}>
+                                {stage.maxPoints}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Forms Access Cards */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                  {/* Nominee Forms - Only visible to nominees */}
+                  {adminData && adminData.userType === 'nominee' && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
+                      <div className="flex items-center mb-4">
+                        <Users className="w-6 h-6 text-blue-600 mr-3" />
+                        <h3 className="text-lg font-semibold text-gray-900">My Application Forms</h3>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <button 
+                          onClick={() => router.push('/admin/submit-application')}
+                          className="w-full p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors text-left"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium text-blue-900">WUA Nomination Form</h4>
+                              <p className="text-sm text-blue-600">Complete application submission</p>
+                              <p className="text-xs text-blue-500 mt-1">6 sections • Comprehensive details</p>
+                            </div>
+                            <ArrowRight className="w-5 h-5 text-blue-600" />
+                          </div>
+                        </button>
+
+                        <button 
+                          onClick={() => router.push('/admin/self-assessment')}
+                          className="w-full p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors text-left"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium text-green-900">Self-Assessment Questionnaire</h4>
+                              <p className="text-sm text-green-600">Interactive evaluation modules</p>
+                              <p className="text-xs text-green-500 mt-1">5 modules • 150 max points</p>
+                            </div>
+                            <ArrowRight className="w-5 h-5 text-green-600" />
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Committee Review Section - Only visible to committee members */}
+                  {adminData && adminData.userType !== 'nominee' && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
+                      <div className="flex items-center mb-4">
+                        <Eye className="w-6 h-6 text-indigo-600 mr-3" />
+                        <h3 className="text-lg font-semibold text-gray-900">Review Nominee Submissions</h3>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <button 
+                          onClick={() => router.push('/admin/data-flow-test')}
+                          className="w-full p-4 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors text-left"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium text-indigo-900">View Submitted Applications</h4>
+                              <p className="text-sm text-indigo-600">Review nominee data and submissions</p>
+                              <p className="text-xs text-indigo-500 mt-1">Applications • Self-Assessments • Results</p>
+                            </div>
+                            <ArrowRight className="w-5 h-5 text-indigo-600" />
+                          </div>
+                        </button>
+
+                        <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                          <div className="flex items-center">
+                            <Bell className="w-4 h-4 text-amber-600 mr-2" />
+                            <div>
+                              <h4 className="font-medium text-amber-800">Committee Member Access</h4>
+                              <p className="text-sm text-amber-700">You can only view and evaluate submitted applications</p>
+                              <p className="text-xs text-amber-600 mt-1">Nominees complete their own applications</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Committee Forms - Only visible to committee members and admins */}
+                  {adminData && adminData.userType !== 'nominee' && (
+                    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
+                      <div className="flex items-center mb-4">
+                        <Award className="w-6 h-6 text-purple-600 mr-3" />
+                        <h3 className="text-lg font-semibold text-gray-900">Committee Evaluation Forms</h3>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <button 
+                          onClick={() => router.push('/admin/circle-evaluation-new')}
+                          className="w-full p-4 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors text-left"
+                          disabled={!['admin', 'super-admin', 'circle-committee'].includes(adminData?.userType || adminData?.adminLevel || '')}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium text-purple-900">Circle Committee Evaluation</h4>
+                              <p className="text-sm text-purple-600">Document verification & site visit</p>
+                              <p className="text-xs text-purple-500 mt-1">5 steps • Regulatory compliance</p>
+                            </div>
+                            <ArrowRight className="w-5 h-5 text-purple-600" />
+                          </div>
+                        </button>
+
+                        <button 
+                          onClick={() => router.push('/admin/corporation-evaluation-new')}
+                          className="w-full p-4 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-colors text-left"
+                          disabled={!['admin', 'super-admin', 'corporation-committee'].includes(adminData?.userType || adminData?.adminLevel || '')}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium text-orange-900">Corporation Committee Assessment</h4>
+                              <p className="text-sm text-orange-600">Strategic evaluation modules</p>
+                              <p className="text-xs text-orange-500 mt-1">5 modules • 30 max points</p>
+                            </div>
+                            <ArrowRight className="w-5 h-5 text-orange-600" />
+                          </div>
+                        </button>
+
+                        <button 
+                          onClick={() => router.push('/admin/state-committee-new')}
+                          className="w-full p-4 bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-lg hover:from-yellow-100 hover:to-orange-100 transition-colors text-left"
+                          disabled={!['admin', 'super-admin', 'state-committee'].includes(adminData?.userType || adminData?.adminLevel || '')}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="font-medium text-yellow-900 flex items-center">
+                                <Crown className="w-4 h-4 mr-1" />
+                                State Committee Final Evaluation
+                              </h4>
+                              <p className="text-sm text-yellow-700">Ultimate award decision</p>
+                              <p className="text-xs text-yellow-600 mt-1">5 questions • 20 max points • Final scoring</p>
+                            </div>
+                            <ArrowRight className="w-5 h-5 text-yellow-600" />
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Forms System Statistics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600">Total System Forms</p>
+                        <p className="text-2xl font-bold text-gray-900">5</p>
+                        <p className="text-xs text-gray-500 mt-1">Nomination + Evaluation</p>
+                      </div>
+                      <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center border border-blue-200">
+                        <FileText className="w-6 h-6 text-blue-600" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600">Active Applications</p>
+                        <p className="text-2xl font-bold text-gray-900">23</p>
+                        <p className="text-xs text-gray-500 mt-1">In various stages</p>
+                      </div>
+                      <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center border border-green-200">
+                        <CheckCircle2 className="w-6 h-6 text-green-600" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-gray-600">Completed Evaluations</p>
+                        <p className="text-2xl font-bold text-gray-900">48</p>
+                        <p className="text-xs text-gray-500 mt-1">Awards processed</p>
+                      </div>
+                      <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center border border-yellow-200">
+                        <Trophy className="w-6 h-6 text-yellow-600" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <button 
+                      onClick={() => toast('System help guide will be available soon', { icon: '📋' })}
+                      className="p-4 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <FileText className="w-8 h-8 text-gray-600 mb-2 mx-auto" />
+                      <p className="font-medium text-gray-900">System Guide</p>
+                      <p className="text-sm text-gray-600">Forms usage guide</p>
+                    </button>
+
+                    <button 
+                      onClick={() => toast('Application tracking will be implemented', { icon: '🔍' })}
+                      className="p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                    >
+                      <Search className="w-8 h-8 text-blue-600 mb-2 mx-auto" />
+                      <p className="font-medium text-gray-900">Track Applications</p>
+                      <p className="text-sm text-gray-600">Monitor progress</p>
+                    </button>
+
+                    <button 
+                      onClick={() => router.push('/admin/data-flow-test')}
+                      className="p-4 bg-orange-50 border border-orange-200 rounded-lg hover:bg-orange-100 transition-colors"
+                    >
+                      <Database className="w-8 h-8 text-orange-600 mb-2 mx-auto" />
+                      <p className="font-medium text-gray-900">Data Flow Test</p>
+                      <p className="text-sm text-gray-600">Test MongoDB integration</p>
+                    </button>
+
+                    <button 
+                      onClick={() => toast('Reports generation coming soon', { icon: '📊' })}
+                      className="p-4 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors"
+                    >
+                      <BarChart3 className="w-8 h-8 text-purple-600 mb-2 mx-auto" />
+                      <p className="font-medium text-gray-900">Generate Reports</p>
+                      <p className="text-sm text-gray-600">System analytics</p>
+                    </button>
                   </div>
                 </div>
               </>

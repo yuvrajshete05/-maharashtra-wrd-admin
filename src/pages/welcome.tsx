@@ -297,7 +297,6 @@ export default function Login() {
         token: result.data.token
       });
 
-      toast.success(`✅ Welcome! Browser session created for this device.`);
       console.log(`✅ Browser nominee session created: ${sessionId}`);
       
       // Redirect to dashboard
