@@ -1,0 +1,420 @@
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import Head from 'next/head'
+import toast from 'react-hot-toast'
+import { LogOut, ArrowLeft, Eye, CheckCircle, XCircle, MessageSquare, Trophy, Award } from 'lucide-react'
+
+interface Application {
+  id: string
+  wuaName: string
+  district: string
+  status: string
+  submissionDate: string
+  category: string
+  feedback: string
+  submittedBy: string
+  userType: string
+  workflowStage: string
+  circleStatus: string
+  corporationStatus: string
+  stateStatus: string
+  finalStatus: string
+  circleRemarks: string
+  corporationRemarks: string
+  stateRemarks: string
+  circleActionDate: string | null
+  corporationActionDate: string | null
+  stateActionDate: string | null
+  finalActionDate: string | null
+}
+
+export default function StateEvaluationSimple() {
+  const router = useRouter()
+  const [adminData, setAdminData] = useState<any>(null)
+  const [applications, setApplications] = useState<Application[]>([])
+  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null)
+  const [remarks, setRemarks] = useState('')
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken')
+    const userData = localStorage.getItem('adminData')
+    
+    if (!token || !userData) {
+      toast.error('Please login first')
+      router.push('/admin/login')
+      return
+    }
+
+    try {
+      const parsedData = JSON.parse(userData)
+      setAdminData(parsedData)
+      loadSubmissions()
+    } catch (error) {
+      console.error('Error parsing admin data:', error)
+      toast.error('Invalid session data. Please login again.')
+      router.push('/admin/login')
+    }
+  }, [router])
+
+  const loadSubmissions = () => {
+    const storedApplications = JSON.parse(localStorage.getItem('nominee_applications') || '[]')
+    // Filter applications that are approved by corporation committee and pending for state review
+    const pendingApplications = storedApplications.filter((app: Application) => 
+      app.workflowStage === 'corporation-approved' && app.stateStatus === 'pending'
+    )
+    setApplications(pendingApplications)
+    console.log('State Committee - Loaded applications:', pendingApplications)
+  }
+
+  const handleViewSubmission = (application: Application) => {
+    setSelectedApplication(application)
+    setRemarks(application.stateRemarks || '')
+  }
+
+  const handleFinalApproval = async () => {
+    if (!selectedApplication || !remarks.trim()) {
+      toast.error('Please add remarks before final approval')
+      return
+    }
+
+    setIsProcessing(true)
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Update the application
+      const storedApplications = JSON.parse(localStorage.getItem('nominee_applications') || '[]')
+      const updatedApplications = storedApplications.map((app: Application) => {
+        if (app.id === selectedApplication.id) {
+          return {
+            ...app,
+            stateStatus: 'approved',
+            stateRemarks: remarks,
+            stateActionDate: new Date().toLocaleDateString('en-GB'),
+            workflowStage: 'state-approved',
+            status: 'Final Approved - Winner',
+            finalStatus: 'winner',
+            finalActionDate: new Date().toLocaleDateString('en-GB')
+          }
+        }
+        return app
+      })
+      
+      localStorage.setItem('nominee_applications', JSON.stringify(updatedApplications))
+      toast.success('🏆 Application approved! Winner declared!')
+      
+      setSelectedApplication(null)
+      setRemarks('')
+      loadSubmissions()
+    } catch (error) {
+      toast.error('Failed to approve application')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleReject = async () => {
+    if (!selectedApplication || !remarks.trim()) {
+      toast.error('Please add remarks before rejecting')
+      return
+    }
+
+    setIsProcessing(true)
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Update the application
+      const storedApplications = JSON.parse(localStorage.getItem('nominee_applications') || '[]')
+      const updatedApplications = storedApplications.map((app: Application) => {
+        if (app.id === selectedApplication.id) {
+          return {
+            ...app,
+            stateStatus: 'rejected',
+            stateRemarks: remarks,
+            stateActionDate: new Date().toLocaleDateString('en-GB'),
+            workflowStage: 'state-rejected',
+            status: 'Final Rejected',
+            finalStatus: 'rejected',
+            finalActionDate: new Date().toLocaleDateString('en-GB')
+          }
+        }
+        return app
+      })
+      
+      localStorage.setItem('nominee_applications', JSON.stringify(updatedApplications))
+      toast.success('Application rejected at final stage')
+      
+      setSelectedApplication(null)
+      setRemarks('')
+      loadSubmissions()
+    } catch (error) {
+      toast.error('Failed to reject application')
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  const handleAnnounceResults = () => {
+    const storedApplications = JSON.parse(localStorage.getItem('nominee_applications') || '[]')
+    const winners = storedApplications.filter((app: Application) => app.finalStatus === 'winner')
+    
+    if (winners.length === 0) {
+      toast.error('No winners to announce yet')
+      return
+    }
+
+    const winnerNames = winners.map((app: Application) => app.wuaName).join(', ')
+    toast.success(`🎉 Results Announced! Winners: ${winnerNames}`, { duration: 5000 })
+  }
+
+  const handleLogout = () => {
+    localStorage.clear()
+    toast.success('Logged out successfully')
+    router.push('/admin/login')
+  }
+
+  if (!adminData) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    )
+  }
+
+  const storedApplications = JSON.parse(localStorage.getItem('nominee_applications') || '[]')
+  const winners = storedApplications.filter((app: Application) => app.finalStatus === 'winner')
+
+  return (
+    <>
+      <Head>
+        <title>State Committee Evaluation - Maharashtra WRD</title>
+        <meta name="description" content="State Committee Final Evaluation Interface" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Header */}
+        <div className="bg-white/10 backdrop-blur-md border-b border-white/20">
+          <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => router.push('/admin/dashboard')}
+                className="flex items-center space-x-2 text-white/80 hover:text-white"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back to Dashboard</span>
+              </button>
+              
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-maharashtra-orange rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">मह</span>
+                </div>
+                <div>
+                  <h1 className="font-semibold text-lg text-white">
+                    State Committee - Final Evaluation
+                  </h1>
+                  <p className="text-white/70 text-sm">Maharashtra Water Resources Department</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="text-right">
+                <p className="text-sm font-medium text-white">{adminData.name}</p>
+                <p className="text-xs text-white/70">{adminData.userType || adminData.adminLevel}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="flex items-center space-x-1 px-3 py-2 text-sm bg-red-500/20 text-red-200 rounded-md hover:bg-red-500/30 border border-red-500/30"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <main className="container mx-auto px-6 py-8">
+          {/* Results Announcement Section */}
+          {winners.length > 0 && (
+            <div className="government-card p-6 mb-6 bg-gradient-to-r from-gold-50 to-orange-50 border-gold-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-gold-800 mb-2 flex items-center">
+                    <Trophy className="w-6 h-6 mr-2" />
+                    Current Winners ({winners.length})
+                  </h2>
+                  <div className="space-y-1">
+                    {winners.map((winner) => (
+                      <p key={winner.id} className="text-gold-700">
+                        🏆 {winner.wuaName} - {winner.district} (Approved: {winner.finalActionDate})
+                      </p>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  onClick={handleAnnounceResults}
+                  className="flex items-center space-x-2 px-6 py-3 bg-gold-500 text-white rounded-lg hover:bg-gold-600"
+                >
+                  <Award className="w-5 h-5" />
+                  <span>Announce Results</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="government-card p-8">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Corporation Recommended Applications</h2>
+              <p className="text-gray-600">Final review of applications recommended by Corporation Committee</p>
+            </div>
+
+            {applications.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-600">No applications recommended by Corporation Committee</p>
+                <button 
+                  onClick={loadSubmissions}
+                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                >
+                  Refresh Applications
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {applications.map((application) => (
+                  <div key={application.id} className="bg-white border rounded-lg p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold text-gray-800">{application.wuaName}</h3>
+                        <p className="text-sm text-gray-600">
+                          Submitted: {application.submissionDate} | District: {application.district}
+                        </p>
+                        <p className="text-sm text-gray-500">By: {application.submittedBy}</p>
+                        <div className="mt-2 space-x-2">
+                          <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                            {application.status}
+                          </span>
+                          <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                            Circle: {application.circleActionDate}
+                          </span>
+                          <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+                            Corporation: {application.corporationActionDate}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleViewSubmission(application)}
+                        className="flex items-center space-x-2 px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>Final Review</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Application Details Modal */}
+          {selectedApplication && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+              <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-gray-800">State Committee - Final Review</h3>
+                    <button
+                      onClick={() => setSelectedApplication(null)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="space-y-4 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Applicant Name</label>
+                        <p className="text-gray-800">{selectedApplication.wuaName}</p>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">District</label>
+                        <p className="text-gray-800">{selectedApplication.district}</p>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Original User Feedback</label>
+                      <p className="text-gray-800 bg-gray-50 p-3 rounded-md">{selectedApplication.feedback}</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Circle Committee Review</label>
+                      <p className="text-gray-800 bg-green-50 p-3 rounded-md border border-green-200">
+                        {selectedApplication.circleRemarks}
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Approved on: {selectedApplication.circleActionDate}
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Corporation Committee Review</label>
+                      <p className="text-gray-800 bg-blue-50 p-3 rounded-md border border-blue-200">
+                        {selectedApplication.corporationRemarks}
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Approved on: {selectedApplication.corporationActionDate}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <MessageSquare className="inline w-4 h-4 mr-2" />
+                      Add Your Final State Committee Remarks
+                    </label>
+                    <textarea
+                      value={remarks}
+                      onChange={(e) => setRemarks(e.target.value)}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="Add your final evaluation remarks here..."
+                      disabled={isProcessing}
+                    />
+                  </div>
+
+                  <div className="flex space-x-4">
+                    <button
+                      onClick={handleFinalApproval}
+                      disabled={isProcessing}
+                      className="flex items-center space-x-2 px-6 py-2 bg-gold-500 text-white rounded-md hover:bg-gold-600 disabled:opacity-50"
+                    >
+                      <Trophy className="w-4 h-4" />
+                      <span>{isProcessing ? 'Processing...' : 'Final Approval - Declare Winner'}</span>
+                    </button>
+                    <button
+                      onClick={handleReject}
+                      disabled={isProcessing}
+                      className="flex items-center space-x-2 px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:opacity-50"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      <span>{isProcessing ? 'Processing...' : 'Final Reject'}</span>
+                    </button>
+                    <button
+                      onClick={() => setSelectedApplication(null)}
+                      className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </>
+  )
+}
