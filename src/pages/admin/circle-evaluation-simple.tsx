@@ -92,7 +92,8 @@ export default function CircleEvaluationSimple() {
             circleRemarks: remarks,
             circleActionDate: new Date().toLocaleDateString('en-GB'),
             workflowStage: 'circle-approved',
-            status: 'Circle Approved'
+            status: 'Circle Approved',
+            corporationStatus: 'pending' // Set corporation status to pending for next level review
           }
         }
         return app
@@ -291,8 +292,8 @@ export default function CircleEvaluationSimple() {
                       <p className="text-gray-800">{selectedApplication.submissionDate}</p>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Feedback</label>
-                      <p className="text-gray-800 bg-gray-50 p-3 rounded-md">{selectedApplication.feedback}</p>
+                      <label className="block text-sm font-medium text-gray-700">Marks</label>
+                      <p className="text-gray-800 bg-gray-50 p-3 rounded-md">{selectedApplication.marks || selectedApplication.feedback || 'No marks available'}</p>
                     </div>
                   </div>
 

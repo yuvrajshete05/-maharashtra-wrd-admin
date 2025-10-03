@@ -5,9 +5,9 @@ import Head from 'next/head'
 import toast from 'react-hot-toast'
 import { User, Send, LogOut, ArrowLeft } from 'lucide-react'
 
-interface SimpleFeedbackForm {
+interface SimpleMarksForm {
   name: string
-  feedback: string
+  marks: string
 }
 
 export default function SubmitApplication() {
@@ -15,7 +15,7 @@ export default function SubmitApplication() {
   const [isLoading, setIsLoading] = useState(false)
   const [adminData, setAdminData] = useState<any>(null)
   
-  const { register, handleSubmit, formState: { errors } } = useForm<SimpleFeedbackForm>()
+  const { register, handleSubmit, formState: { errors } } = useForm<SimpleMarksForm>()
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken')
@@ -51,7 +51,7 @@ export default function SubmitApplication() {
     }
   }
 
-  const onSubmit = async (data: SimpleFeedbackForm) => {
+  const onSubmit = async (data: SimpleMarksForm) => {
     setIsLoading(true)
     
     try {
@@ -72,7 +72,7 @@ export default function SubmitApplication() {
           year: 'numeric' 
         }),
         category: 'MINOR' as const,
-        feedback: data.feedback,
+        marks: data.marks,
         submittedBy: adminData?.name || 'Unknown',
         userType: adminData?.userType || 'nominee',
         // Workflow tracking
@@ -99,14 +99,14 @@ export default function SubmitApplication() {
       
       console.log('Form submitted:', data)
       console.log('Application created:', newApplication)
-      toast.success('Feedback submitted successfully!')
+      toast.success('Application with marks submitted successfully!')
       
       setTimeout(() => {
         router.push('/admin/dashboard')
       }, 1000)
     } catch (error) {
       console.error('Submission error:', error)
-      toast.error('Failed to submit feedback. Please try again.')
+      toast.error('Failed to submit application. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -123,8 +123,8 @@ export default function SubmitApplication() {
   return (
     <>
       <Head>
-        <title>Submit Feedback - Maharashtra Water Resources Department</title>
-        <meta name="description" content="Submit your feedback" />
+        <title>Submit Application - Maharashtra Water Resources Department</title>
+        <meta name="description" content="Submit your application with marks" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
@@ -171,8 +171,8 @@ export default function SubmitApplication() {
         <main className="p-6">
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Submit Feedback</h2>
-              <p className="text-gray-600">Share your thoughts and suggestions</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Submit Application</h2>
+              <p className="text-gray-600">Submit your application with marks</p>
             </div>
 
             <div className="bg-white rounded-lg shadow-lg p-8">
@@ -199,20 +199,20 @@ export default function SubmitApplication() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Your Feedback
+                    Your Marks
                   </label>
                   <textarea
-                    {...register('feedback', {
-                      required: 'Feedback is required',
-                      minLength: { value: 10, message: 'Feedback must be at least 10 characters' }
+                    {...register('marks', {
+                      required: 'Marks are required',
+                      minLength: { value: 1, message: 'Marks must be at least 1 character' }
                     })}
                     rows={6}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 resize-vertical"
-                    placeholder="Please share your feedback, suggestions, or comments..."
+                    placeholder="Please enter your marks or score..."
                     disabled={isLoading}
                   />
-                  {errors.feedback && (
-                    <p className="mt-1 text-sm text-red-600">{errors.feedback.message}</p>
+                  {errors.marks && (
+                    <p className="mt-1 text-sm text-red-600">{errors.marks.message}</p>
                   )}
                 </div>
 
@@ -230,7 +230,7 @@ export default function SubmitApplication() {
                     ) : (
                       <>
                         <Send className="w-5 h-5" />
-                        <span>Submit Feedback</span>
+                        <span>Submit Application</span>
                       </>
                     )}
                   </button>

@@ -11,7 +11,8 @@ interface Application {
   status: string
   submissionDate: string
   category: string
-  feedback: string
+  feedback?: string // For backward compatibility
+  marks?: string // New marks field
   submittedBy: string
   userType: string
   workflowStage: string
@@ -268,8 +269,8 @@ export default function CircleApprovedApplications() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">Original User Feedback</label>
-                      <p className="text-gray-800 bg-gray-50 p-4 rounded-md border">{selectedApplication.feedback}</p>
+                      <label className="block text-sm font-medium text-gray-700">Original User Marks</label>
+                      <p className="text-gray-800 bg-gray-50 p-4 rounded-md border">{selectedApplication.marks || selectedApplication.feedback || 'No marks available'}</p>
                     </div>
 
                     <div>

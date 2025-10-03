@@ -44,6 +44,10 @@ interface Application {
   status: 'Under Review' | 'Completed' | 'Forwarded' | 'Pending Review'
   submissionDate: string
   category: 'MAJOR' | 'MINOR'
+  feedback?: string // For backward compatibility
+  marks?: string // New field for nominee applications
+  submittedBy?: string
+  userType?: string
 }
 
 export default function AdminDashboard() {
@@ -57,6 +61,13 @@ export default function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [applications, setApplications] = useState<Application[]>([])
+  const [users, setUsers] = useState([
+    { id: 1, name: 'John Doe', email: 'john@wua.gov.in', role: 'Circle Committee', status: 'Active' },
+    { id: 2, name: 'Jane Smith', email: 'jane@wua.gov.in', role: 'Corporation Committee', status: 'Active' },
+    { id: 3, name: 'Ram Patil', email: 'ram@wua.gov.in', role: 'State Committee', status: 'Active' },
+    { id: 4, name: 'Priya Sharma', email: 'priya@wua.gov.in', role: 'Nominee', status: 'Pending' },
+    { id: 5, name: 'Admin User', email: 'admin@wua.gov.in', role: 'Admin', status: 'Active' }
+  ])
 
   // Load applications from localStorage (for nominees) or use default data (for admins)
   const loadApplications = () => {
@@ -318,8 +329,7 @@ export default function AdminDashboard() {
           ...baseNav,
           { key: 'applications', label: 'All Applications', icon: FileText },
           { key: 'forms', label: 'WUA Forms System', icon: FormInput },
-          { key: 'users', label: 'User Management', icon: Users },
-          { key: 'reports', label: 'System Reports', icon: BarChart3 }
+          { key: 'users', label: 'User Management', icon: Users }
         ]
       case 'nominee':
         return [
@@ -361,12 +371,14 @@ export default function AdminDashboard() {
     
     switch (userType) {
       case 'admin':
-        return [
-          { label: 'Total Applications', value: '18', icon: FileText, color: 'teal' },
-          { label: 'Pending Review', value: '6', icon: Clock, color: 'yellow' },
-          { label: 'Under Review', value: '8', icon: Eye, color: 'blue' },
-          { label: 'Completed', value: '4', icon: CheckCircle2, color: 'green' }
-        ]
+        // COMMENTED OUT - Admin Statistics Section (can be restored in future)
+        // return [
+        //   { label: 'Total Applications', value: '18', icon: FileText, color: 'teal' },
+        //   { label: 'Pending Review', value: '6', icon: Clock, color: 'yellow' },
+        //   { label: 'Under Review', value: '8', icon: Eye, color: 'blue' },
+        //   { label: 'Completed', value: '4', icon: CheckCircle2, color: 'green' }
+        // ]
+        return []
       case 'nominee':
         return []
       case 'circle_committee':
@@ -418,6 +430,104 @@ export default function AdminDashboard() {
       localStorage.clear();
       toast.success('Logged out successfully');
       router.push('/');
+    }
+  }
+
+  // User Management Functions
+  const handleEditUser = (userId: string, userName: string) => {
+    const userIndex = parseInt(userId.replace('user-', ''))
+    const user = users[userIndex]
+    
+    const newName = prompt('Enter new name:', user.name)
+    if (newName && newName.trim() !== '') {
+      const newEmail = prompt('Enter new email:', user.email)
+      if (newEmail && newEmail.trim() !== '') {
+        setUsers(prevUsers => 
+          prevUsers.map((u, index) => 
+            index === userIndex 
+              ? { ...u, name: newName.trim(), email: newEmail.trim() }
+              : u
+          )
+        )
+        toast.success(`User ${userName} updated successfully!`)
+      }
+    }
+  }
+
+  const handleDeleteUser = (userId: string, userName: string) => {
+    if (confirm(`Are you sure you want to delete user: ${userName}?`)) {
+      // Extract the index from userId (e.g., "user-1" -> 1)
+      const userIndex = parseInt(userId.replace('user-', ''))
+      setUsers(prevUsers => prevUsers.filter((user, index) => index !== userIndex))
+      toast.success(`User ${userName} deleted successfully`)
+    }
+  }
+
+  const handleAddUser = () => {
+    const newName = prompt('Enter user name:')
+    if (newName && newName.trim() !== '') {
+      const newEmail = prompt('Enter user email:')
+      if (newEmail && newEmail.trim() !== '') {
+        const newRole = prompt('Enter user role (Circle Committee/Corporation Committee/State Committee/Nominee/Admin):', 'Nominee')
+        if (newRole && newRole.trim() !== '') {
+          const newId = Math.max(...users.map(u => u.id)) + 1
+          const newUser = {
+            id: newId,
+            name: newName.trim(),
+            email: newEmail.trim(),
+            role: newRole.trim(),
+            status: 'Active'
+          }
+          setUsers(prevUsers => [...prevUsers, newUser])
+          toast.success(`User ${newName} added successfully!`)
+        }
+      }
+    }
+  }
+
+  // Form Management Functions
+  const handleEditApplication = (appId: string, wuaName: string) => {
+    const applications = JSON.parse(localStorage.getItem('nominee_applications') || '[]')
+    const appIndex = applications.findIndex((app: any) => app.id === appId)
+    
+    if (appIndex !== -1) {
+      const app = applications[appIndex]
+      
+      // Allow editing of key fields
+      const newWuaName = prompt('Edit WUA Name:', app.wuaName || '')
+      if (newWuaName !== null && newWuaName.trim() !== '') {
+        const newMarks = prompt('Edit Marks/Feedback:', app.marks || app.feedback || '')
+        if (newMarks !== null) {
+          // Update the application
+          applications[appIndex] = {
+            ...app,
+            wuaName: newWuaName.trim(),
+            marks: newMarks.trim(),
+            feedback: newMarks.trim() // Keep both for compatibility
+          }
+          
+          // Save back to localStorage
+          localStorage.setItem('nominee_applications', JSON.stringify(applications))
+          toast.success(`Application ${newWuaName} updated successfully!`)
+          
+          // Refresh to show changes
+          window.location.reload()
+        }
+      }
+    } else {
+      toast.error('Application not found!')
+    }
+  }
+
+  const handleDeleteApplication = (appId: string, wuaName: string) => {
+    if (confirm(`Are you sure you want to delete application: ${wuaName}?`)) {
+      // Remove from localStorage
+      const applications = JSON.parse(localStorage.getItem('nominee_applications') || '[]')
+      const updatedApplications = applications.filter((app: any) => app.id !== appId)
+      localStorage.setItem('nominee_applications', JSON.stringify(updatedApplications))
+      toast.success(`Application ${wuaName} deleted successfully`)
+      // Refresh the page to show updated data
+      window.location.reload()
     }
   }
 
@@ -754,42 +864,32 @@ export default function AdminDashboard() {
                 {adminData && (adminData.userType === 'admin' || adminData.adminLevel === 'admin' || adminData.adminLevel === 'super-admin') && (
                   <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg mb-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">Admin Management</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <button 
-                        onClick={() => toast('User management interface', { icon: 'ℹ️' })}
+                        onClick={() => setActiveSection('manage-users')}
                         className="p-4 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
                       >
                         <Users className="w-8 h-8 text-blue-600 mb-2" />
                         <p className="font-medium text-gray-900">Manage Users</p>
-                        <p className="text-sm text-gray-600">Add/edit users</p>
+                        <p className="text-sm text-gray-600">Add/edit/delete users</p>
                       </button>
+                      
                       <button 
-                        onClick={() => {
-                          const storedApplications = JSON.parse(localStorage.getItem('nominee_applications') || '[]')
-                          console.log('All Applications:', storedApplications)
-                          toast.success(`Found ${storedApplications.length} applications in system`)
-                        }}
+                        onClick={() => setActiveSection('manage-forms')}
                         className="p-4 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
                       >
                         <Database className="w-8 h-8 text-green-600 mb-2" />
                         <p className="font-medium text-gray-900">Manage Forms</p>
-                        <p className="text-sm text-gray-600">View all applications</p>
+                        <p className="text-sm text-gray-600">Edit/Delete applications</p>
                       </button>
+                      
                       <button 
-                        onClick={() => {
-                          const logs = [
-                            `${new Date().toLocaleString()}: Admin accessed dashboard`,
-                            `${new Date().toLocaleString()}: System functioning normally`,
-                            `${new Date().toLocaleString()}: Applications: ${JSON.parse(localStorage.getItem('nominee_applications') || '[]').length} total`
-                          ]
-                          console.log('System Logs:', logs)
-                          toast.success('Logs displayed in console')
-                        }}
+                        onClick={() => setActiveSection('view-submissions')}
                         className="p-4 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors"
                       >
                         <FileText className="w-8 h-8 text-purple-600 mb-2" />
-                        <p className="font-medium text-gray-900">View Logs</p>
-                        <p className="text-sm text-gray-600">System activity logs</p>
+                        <p className="font-medium text-gray-900">View All Submissions</p>
+                        <p className="text-sm text-gray-600">Complete workflow overview</p>
                       </button>
 
                     </div>
@@ -1261,6 +1361,278 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </>
+            ) : activeSection === 'manage-users' ? (
+              // 🔹 1. MANAGE USERS DASHBOARD
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-gray-900">👥 User Management Dashboard</h2>
+                  <button 
+                    onClick={handleAddUser}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                  >
+                    <Users className="w-4 h-4" />
+                    <span>➕ Add New User</span>
+                  </button>
+                </div>
+                
+                <div className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                  <div className="px-6 py-4 bg-gray-50 border-b">
+                    <h3 className="text-lg font-semibold text-gray-900">All System Users</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User Name</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {users.map((user, index) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{user.name}</td>
+                            <td className="px-6 py-4 text-sm text-gray-600">{user.email}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">
+                              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                {user.role}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                user.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {user.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm space-x-2">
+                              <button 
+                                onClick={() => handleEditUser(`user-${index}`, user.name)}
+                                className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 transition-colors"
+                              >
+                                ✏️ Edit
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteUser(`user-${index}`, user.name)}
+                                className="px-3 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors"
+                              >
+                                ❌ Delete
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            ) : activeSection === 'manage-forms' ? (
+              // 🔹 2. MANAGE FORMS DASHBOARD
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-gray-900">📝 Form Management Dashboard</h2>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="text"
+                      placeholder="🔍 Search forms..."
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
+                    <select className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                      <option>All Stages</option>
+                      <option>Circle Committee</option>
+                      <option>Corporation Committee</option>
+                      <option>State Committee</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                  <div className="px-6 py-4 bg-gray-50 border-b">
+                    <h3 className="text-lg font-semibold text-gray-900">All WUA Application Forms</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Form ID</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User Name</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Marks/Feedback</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Current Stage</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {JSON.parse(localStorage.getItem('nominee_applications') || '[]').map((app, index) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{app.id}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900">{app.wuaName || 'N/A'}</td>
+                            <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                              {app.marks || app.feedback || 'No data'}
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                {app.workflowStage || 'Submitted'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                app.status === 'Approved' ? 'bg-green-100 text-green-800' : 
+                                app.status === 'Rejected' ? 'bg-red-100 text-red-800' : 
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {app.status || 'Pending'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm space-x-2">
+                              <button 
+                                onClick={() => handleEditApplication(app.id, app.wuaName || 'Unknown')}
+                                className="px-3 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200 transition-colors"
+                              >
+                                ✏️ Edit
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteApplication(app.id, app.wuaName || 'Unknown')}
+                                className="px-3 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200 transition-colors"
+                              >
+                                ❌ Delete
+                              </button>
+                              <button 
+                                onClick={() => handleViewApplication(app)}
+                                className="px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
+                              >
+                                👁️ View
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            ) : activeSection === 'view-submissions' ? (
+              // 🔹 3. VIEW ALL SUBMISSIONS DASHBOARD
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-gray-900">📊 Complete Workflow Overview</h2>
+                  <button 
+                    onClick={() => {
+                      const allApps = JSON.parse(localStorage.getItem('nominee_applications') || '[]');
+                      toast.success(`Downloading report with ${allApps.length} applications!`, { icon: '📥' });
+                    }}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>📥 Download Report</span>
+                  </button>
+                </div>
+                
+                {/* Statistics Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  {(() => {
+                    const allApps = JSON.parse(localStorage.getItem('nominee_applications') || '[]');
+                    const circleApproved = allApps.filter(app => app.circleStatus === 'approved').length;
+                    const circlePending = allApps.filter(app => !app.circleStatus || app.circleStatus === 'pending').length;
+                    const corporationApproved = allApps.filter(app => app.corporationStatus === 'approved').length;
+                    const corporationPending = allApps.filter(app => app.workflowStage === 'circle-approved' && app.corporationStatus === 'pending').length;
+                    const stateApproved = allApps.filter(app => app.stateStatus === 'approved' || app.finalStatus === 'winner').length;
+                    const statePending = allApps.filter(app => app.workflowStage === 'corporation-approved' && app.stateStatus === 'pending').length;
+                    
+                    return [
+                      { label: 'Total Submissions', value: allApps.length, color: 'bg-blue-500', icon: '📝' },
+                      { label: 'Circle Approved', value: circleApproved, color: 'bg-green-500', icon: '✅' },
+                      { label: 'Corporation Approved', value: corporationApproved, color: 'bg-yellow-500', icon: '🏢' },
+                      { label: 'State Finalized', value: stateApproved, color: 'bg-purple-500', icon: '🏆' }
+                    ].map((stat, index) => (
+                      <div key={index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                            <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                          </div>
+                          <div className={`w-12 h-12 ${stat.color} rounded-full flex items-center justify-center text-white text-xl`}>
+                            {stat.icon}
+                          </div>
+                        </div>
+                      </div>
+                    ));
+                  })()}
+                </div>
+                
+                {/* Workflow Status Table */}
+                <div className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                  <div className="px-6 py-4 bg-gray-50 border-b">
+                    <h3 className="text-lg font-semibold text-gray-900">📋 Complete Submission Tracking</h3>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Application ID</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">WUA Name</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Circle Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Corporation Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">State Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Final Result</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {JSON.parse(localStorage.getItem('nominee_applications') || '[]').map((app, index) => (
+                          <tr key={index} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{app.id}</td>
+                            <td className="px-6 py-4 text-sm text-gray-900 marathi-text">{app.wuaName || 'N/A'}</td>
+                            <td className="px-6 py-4 text-sm">
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                app.circleStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                                app.circleStatus === 'rejected' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {app.circleStatus || 'Pending'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                app.corporationStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                                app.corporationStatus === 'rejected' ? 'bg-red-100 text-red-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {app.corporationStatus || 'Not Reached'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                app.stateStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                                app.stateStatus === 'rejected' ? 'bg-red-100 text-red-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {app.stateStatus || 'Not Reached'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 text-sm">
+                              {app.finalStatus === 'winner' ? (
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+                                  🏆 Winner
+                                </span>
+                              ) : app.stateStatus === 'approved' ? (
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                  ✅ Approved
+                                </span>
+                              ) : (
+                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                                  ⏳ In Progress
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             ) : (
               <div className="text-center text-gray-600">
                 <h2 className="text-2xl font-bold mb-4 text-gray-900">Section Under Development</h2>
@@ -1314,10 +1686,10 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Application Content - Different for nominees vs admins */}
-                {selectedApplication.feedback ? (
-                  /* Feedback Section for Nominee Applications */
+                {(selectedApplication.userType === 'nominee' || selectedApplication.marks || selectedApplication.feedback) ? (
+                  /* Marks/Feedback Section for Nominee Applications */
                   <div className="mb-6 sm:mb-8">
-                    <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Submitted Feedback</h4>
+                    <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Submitted Application</h4>
                     <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 sm:p-6">
                       <div className="mb-4">
                         <p className="text-xs text-gray-600 font-medium mb-2">Submitted By:</p>
@@ -1328,9 +1700,13 @@ export default function AdminDashboard() {
                         <p className="text-sm text-gray-900">{selectedApplication.submissionDate}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-600 font-medium mb-2">Feedback Content:</p>
+                        <p className="text-xs text-gray-600 font-medium mb-2">
+                          Marks:
+                        </p>
                         <div className="bg-white border border-gray-200 rounded p-3 max-h-48 overflow-y-auto">
-                          <p className="text-sm text-gray-900 whitespace-pre-wrap">{selectedApplication.feedback}</p>
+                          <p className="text-sm text-gray-900 whitespace-pre-wrap">
+                            {selectedApplication.marks || selectedApplication.feedback || 'No marks data found. Please ensure the application was submitted with marks.'}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -1365,17 +1741,9 @@ export default function AdminDashboard() {
                     Close
                   </button>
                   
-                  {selectedApplication.feedback ? (
-                    /* Actions for Nominee Applications */
-                    <button
-                      onClick={() => {
-                        toast.success('Feedback reviewed successfully!')
-                        handleCloseModal()
-                      }}
-                      className="px-4 sm:px-6 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors shadow-lg"
-                    >
-                      Mark as Reviewed
-                    </button>
+                  {(selectedApplication.userType === 'nominee' || selectedApplication.marks || selectedApplication.feedback) ? (
+                    /* Actions for Nominee Applications - Only Close button needed */
+                    null
                   ) : (
                     /* Actions for Admin Applications */
                     <>

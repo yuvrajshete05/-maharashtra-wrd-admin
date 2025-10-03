@@ -16,7 +16,8 @@ interface Application {
   corporationStatus: string
   corporationActionDate: string
   corporationRemarks: string
-  originalFeedback: string
+  originalFeedback?: string // For backward compatibility
+  marks?: string // New marks field
 }
 
 export default function CorporationApprovedApplications() {
@@ -287,13 +288,13 @@ export default function CorporationApprovedApplications() {
                 </div>
 
                 {/* Original Feedback */}
-                {selectedApp.originalFeedback && (
+                {(selectedApp.marks || selectedApp.originalFeedback) && (
                   <div className="bg-white/5 border border-white/10 rounded-lg p-4">
                     <h4 className="font-bold text-white mb-3 flex items-center">
                       <User className="w-5 h-5 mr-2" />
-                      Original Application Feedback
+                      Original Application Marks
                     </h4>
-                    <p className="text-gray-300">{selectedApp.originalFeedback}</p>
+                    <p className="text-gray-300">{selectedApp.marks || selectedApp.originalFeedback || 'No marks available'}</p>
                   </div>
                 )}
 

@@ -92,7 +92,8 @@ export default function CorporationEvaluationSimple() {
             corporationRemarks: remarks,
             corporationActionDate: new Date().toLocaleDateString('en-GB'),
             workflowStage: 'corporation-approved',
-            status: 'Corporation Approved'
+            status: 'Corporation Approved',
+            stateStatus: 'pending' // Set state status to pending for next level review
           }
         }
         return app
